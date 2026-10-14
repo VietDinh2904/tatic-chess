@@ -50,7 +50,7 @@ const coach = document.querySelector("#coachMessage");
 const moveList = document.querySelector("#moveList");
 const modal = document.querySelector("#modal");
 let current = 0, step = 0, mistakes = 0, attempts = 0, correctAttempts = 0, selected = null;
-let position = {}, lastMove = [], solved = new Set(), style = "twisted", mode = "2d", sound = true;
+let position = {}, lastMove = [], solved = new Set(), style = "twisted", sound = true;
 
 function parseFen(fen) {
   const out = {}, rows = fen.split(" ")[0].split("/");
@@ -68,7 +68,6 @@ function renderList() {
 function renderBoard() {
   const expected = puzzles[current].steps[step];
   boardEl.dataset.style = style;
-  boardEl.classList.toggle("mode-3d", mode === "3d");
   boardEl.innerHTML = "";
   for (let rank=8; rank>=1; rank--) for (let f=0; f<8; f++) {
     const sq = "abcdefgh"[f] + rank, piece = position[sq];
@@ -87,7 +86,7 @@ function renderBoard() {
       if (mistakes >= 3 && expected?.[0] === sq) el.classList.add("hint-source");
       el.dataset.kind = piece.toLowerCase();
       const pieceColor = piece === piece.toUpperCase() ? "white" : "black";
-      el.src = `assets/pieces/sliced/${style}/${mode}/${pieceColor}/${piece.toLowerCase()}.png`;
+      el.src = `assets/pieces/sliced/${style}/2d/${pieceColor}/${piece.toLowerCase()}.png`;
       el.alt = `${pieceColor} ${piece.toLowerCase()}`;
       el.draggable = expected?.[2] === "student";
       el.addEventListener("dragstart", e => e.dataTransfer.setData("text/plain", sq));
@@ -196,9 +195,4 @@ document.querySelector("#soundBtn").onclick = e => { sound = !sound; e.currentTa
 document.querySelectorAll(".style-card").forEach(card => card.onclick = () => {
   style = card.dataset.style; document.querySelectorAll(".style-card").forEach(c=>c.classList.toggle("active",c===card)); renderBoard();
 });
-document.querySelectorAll(".dimension-toggle button").forEach(btn => btn.onclick = () => {
-  mode = btn.dataset.mode; document.querySelectorAll(".dimension-toggle button").forEach(b=>b.classList.toggle("active",b===btn));
-  document.querySelector("#styleGrid").classList.toggle("mode-3d",mode==="3d"); renderBoard();
-});
-
 loadPuzzle(0);

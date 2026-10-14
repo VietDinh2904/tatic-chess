@@ -1,11 +1,11 @@
 <!doctype html>
-<html lang="vi">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#171713" />
-  <title>Tactic Atelier - 10 bài cờ chiến thuật</title>
-  <meta name="description" content="Demo huấn luyện chiến thuật cờ vua tương tác với 10 bài tập, 5 phong cách quân cờ và chế độ 2D/3D." />
+  <title>Tactic Atelier - 10 Interactive Chess Puzzles</title>
+  <meta name="description" content="An interactive chess tactics trainer with 10 puzzles, five original piece styles, and 2D/3D display modes." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
@@ -19,30 +19,30 @@
         <span><strong>TACTIC</strong><small>ATELIER</small></span>
       </a>
 
-      <div class="course-label">KHÓA LUYỆN TẬP</div>
+      <div class="course-label">TRAINING COURSE</div>
       <div class="course-card">
         <span class="course-icon">W</span>
-        <div><b>Woodpecker</b><small>10 bài demo · Dễ</small></div>
+        <div><b>Woodpecker</b><small>10-puzzle demo · Easy</small></div>
         <span class="course-progress">10</span>
       </div>
 
-      <nav class="puzzle-list" id="puzzleList" aria-label="Danh sách bài tập"></nav>
+      <nav class="puzzle-list" id="puzzleList" aria-label="Puzzle list"></nav>
 
       <div class="sidebar-footer">
-        <div class="mini-stat"><span id="solvedCount">0</span><small>đã giải</small></div>
-        <div class="mini-stat"><span id="accuracy">100%</span><small>chính xác</small></div>
+        <div class="mini-stat"><span id="solvedCount">0</span><small>solved</small></div>
+        <div class="mini-stat"><span id="accuracy">100%</span><small>accuracy</small></div>
       </div>
     </aside>
 
     <main>
       <header class="topbar">
         <div>
-          <span class="eyebrow">PHÒNG LUYỆN CHIẾN THUẬT</span>
-          <h1>Nhìn ra đòn quyết định.</h1>
+          <span class="eyebrow">TACTICS TRAINING ROOM</span>
+          <h1>Find the decisive move.</h1>
         </div>
         <div class="top-actions">
-          <button class="icon-btn" id="soundBtn" aria-label="Bật hoặc tắt âm thanh">♪</button>
-          <div class="streak"><span>◆</span><b id="streakCount">0</b><small>chuỗi đúng</small></div>
+          <button class="icon-btn" id="soundBtn" aria-label="Toggle sound">♪</button>
+          <div class="streak"><span>◆</span><b id="streakCount">0</b><small>win streak</small></div>
         </div>
       </header>
 
@@ -50,68 +50,68 @@
         <div class="board-column">
           <div class="lesson-meta">
             <div>
-              <span class="lesson-number" id="lessonNumber">BÀI 01 / 10</span>
+              <span class="lesson-number" id="lessonNumber">PUZZLE 01 / 10</span>
               <h2 id="lessonTitle">Hamppe – Steinitz</h2>
               <p id="lessonPlace">Vienna, 1860</p>
             </div>
-            <div class="turn-badge" id="turnBadge"><i></i><span>ĐEN ĐI TRƯỚC</span></div>
+            <div class="turn-badge" id="turnBadge"><i></i><span>BLACK TO MOVE</span></div>
           </div>
 
           <div class="board-stage" id="boardStage">
             <div class="rank-labels" aria-hidden="true"><span>8</span><span>7</span><span>6</span><span>5</span><span>4</span><span>3</span><span>2</span><span>1</span></div>
-            <div class="board" id="board" role="grid" aria-label="Bàn cờ tương tác"></div>
+            <div class="board" id="board" role="grid" aria-label="Interactive chessboard"></div>
             <div class="file-labels" aria-hidden="true"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span><span>g</span><span>h</span></div>
           </div>
 
           <div class="board-caption">
-            <span><kbd>Kéo</kbd> quân cờ đến ô bạn chọn</span>
-            <button id="resetBtn">↻ &nbsp;Đặt lại bài</button>
+            <span><kbd>Drag</kbd> a piece to your chosen square</span>
+            <button id="resetBtn">↻ &nbsp;Reset puzzle</button>
           </div>
         </div>
 
         <aside class="coach-panel">
           <div class="coach-heading">
             <div class="coach-avatar">♚</div>
-            <div><span>HUẤN LUYỆN VIÊN</span><h3>Coach Steinitz</h3></div>
+            <div><span>YOUR COACH</span><h3>Coach Steinitz</h3></div>
             <i class="online-dot"></i>
           </div>
 
           <div class="coach-message" id="coachMessage">
-            <span class="message-label">NHIỆM VỤ</span>
-            <p>Hãy tìm nước đi mạnh nhất trong thế cờ này. Cầm quân lên và bắt đầu!</p>
+            <span class="message-label">YOUR TASK</span>
+            <p>Find the strongest move in this position. Pick up a piece and begin.</p>
           </div>
 
           <div class="move-history">
-            <div class="section-title"><span>DIỄN BIẾN</span><span id="mistakeCount">0 lỗi</span></div>
-            <ol id="moveList"><li class="empty-move">Chưa có nước đi nào</li></ol>
+            <div class="section-title"><span>MOVE HISTORY</span><span id="mistakeCount">0 mistakes</span></div>
+            <ol id="moveList"><li class="empty-move">No moves yet</li></ol>
           </div>
 
           <div class="hint-meter">
-            <div class="section-title"><span>MỨC GỢI Ý</span><span id="hintLabel">Tự lực</span></div>
+            <div class="section-title"><span>HINT LEVEL</span><span id="hintLabel">Independent</span></div>
             <div class="meter"><i></i><i></i><i></i><i></i><i></i></div>
-            <small>Sai 3 lần: gợi ý quân · Sai 5 lần: gợi ý ô</small>
+            <small>3 misses: highlight piece · 5 misses: highlight square</small>
           </div>
 
-          <button class="next-btn" id="nextBtn" disabled>Bài tiếp theo <span>→</span></button>
+          <button class="next-btn" id="nextBtn" disabled>Next puzzle <span>→</span></button>
         </aside>
       </section>
 
       <section class="piece-lab">
         <div class="lab-copy">
-          <span class="eyebrow">XƯỞNG QUÂN CỜ</span>
-          <h2>Năm cá tính,<br><em>một bàn đấu.</em></h2>
-          <p>Chọn ngôn ngữ tạo hình phù hợp với người học. Mỗi bộ đều có phiên bản phẳng dễ đọc và phiên bản nổi giàu chiều sâu.</p>
-          <div class="dimension-toggle" role="group" aria-label="Chế độ hiển thị quân cờ">
+          <span class="eyebrow">THE PIECE ATELIER</span>
+          <h2>Five personalities,<br><em>one board.</em></h2>
+          <p>Choose the visual language that best suits the learner. Every set includes a crisp flat edition and a richly dimensional version.</p>
+          <div class="dimension-toggle" role="group" aria-label="Chess piece display mode">
             <button class="active" data-mode="2d">2D</button>
             <button data-mode="3d">3D</button>
           </div>
         </div>
         <div class="style-grid" id="styleGrid">
-          <button class="style-card active" data-style="twisted"><span class="piece-sample"></span><b>Cột xoắn</b><small>Gỗ tiện hữu cơ</small><i>01</i></button>
-          <button class="style-card" data-style="bauhaus"><span class="piece-sample"></span><b>Bauhaus</b><small>Hình học tối giản</small><i>02</i></button>
-          <button class="style-card" data-style="marble"><span class="piece-sample"></span><b>Cẩm thạch</b><small>Điêu khắc cổ điển</small><i>03</i></button>
-          <button class="style-card" data-style="nocturne"><span class="piece-sample"></span><b>Hắc diện</b><small>Đa diện ánh lam</small><i>04</i></button>
-          <button class="style-card" data-style="royal-human"><span class="piece-sample"></span><b>Hoàng gia</b><small>Nhân vật Đại Việt</small><i>05</i></button>
+          <button class="style-card active" data-style="twisted"><span class="piece-sample"></span><b>Twisted</b><small>Organic turned wood</small><i>01</i></button>
+          <button class="style-card" data-style="bauhaus"><span class="piece-sample"></span><b>Bauhaus</b><small>Minimal geometry</small><i>02</i></button>
+          <button class="style-card" data-style="marble"><span class="piece-sample"></span><b>Marble</b><small>Classical sculpture</small><i>03</i></button>
+          <button class="style-card" data-style="nocturne"><span class="piece-sample"></span><b>Nocturne</b><small>Blue-lit obsidian</small><i>04</i></button>
+          <button class="style-card" data-style="royal-human"><span class="piece-sample"></span><b>Royal Court</b><small>Realistic Vietnamese figures</small><i>05</i></button>
         </div>
       </section>
     </main>
@@ -121,10 +121,10 @@
   <div class="modal-backdrop" id="modal" aria-hidden="true">
     <div class="success-modal">
       <span class="success-glyph">✓</span>
-      <span class="eyebrow">CHÍNH XÁC</span>
-      <h2 id="successTitle">Đòn chiến thuật hoàn tất!</h2>
+      <span class="eyebrow">CORRECT</span>
+      <h2 id="successTitle">Tactic complete!</h2>
       <p id="successText"></p>
-      <button id="modalNext">Tiếp tục bài kế <span>→</span></button>
+      <button id="modalNext">Continue to the next puzzle <span>→</span></button>
     </div>
   </div>
 

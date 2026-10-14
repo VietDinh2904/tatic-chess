@@ -82,11 +82,13 @@ function renderBoard() {
     cell.addEventListener("drop", e => { e.preventDefault(); attemptMove(e.dataTransfer.getData("text/plain"), sq); });
     cell.addEventListener("click", () => handleClick(sq));
     if (piece) {
-      const el = document.createElement("span");
+      const el = document.createElement("img");
       el.className = `piece ${piece === piece.toUpperCase() ? "white":"black"}`;
       if (mistakes >= 3 && expected?.[0] === sq) el.classList.add("hint-source");
       el.dataset.kind = piece.toLowerCase();
-      el.setAttribute("aria-label", `${piece === piece.toUpperCase() ? "white" : "black"} ${piece.toLowerCase()}`);
+      const pieceColor = piece === piece.toUpperCase() ? "white" : "black";
+      el.src = `assets/pieces/sliced/${style}/${mode}/${pieceColor}/${piece.toLowerCase()}.png`;
+      el.alt = `${pieceColor} ${piece.toLowerCase()}`;
       el.draggable = expected?.[2] === "student";
       el.addEventListener("dragstart", e => e.dataTransfer.setData("text/plain", sq));
       cell.appendChild(el);

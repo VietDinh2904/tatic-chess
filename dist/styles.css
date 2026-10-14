@@ -28,14 +28,22 @@ button { font: inherit; }
 .course-card b { font-size: 12px; }
 .course-card small { color: #81837b; font-size: 9px; margin-top: 2px; }
 .course-progress { color: var(--gold); font-size: 10px; }
-.puzzle-list { margin-top: 18px; overflow: auto; padding-right: 4px; }
-.puzzle-item { width: 100%; border: 0; background: transparent; color: #96988f; padding: 9px 10px; display: grid; grid-template-columns: 24px 1fr 12px; align-items: center; text-align: left; cursor: pointer; border-radius: 5px; transition: .2s; }
+.puzzle-filters { margin-top: 14px; display: grid; gap: 8px; }
+.difficulty-tabs { display: grid; grid-template-columns: repeat(4,1fr); gap: 3px; }
+.difficulty-tabs button { border: 1px solid #383a33; color: #8f9189; background: #21221d; padding: 6px 2px; cursor: pointer; font-size: 8px; border-radius: 3px; }
+.difficulty-tabs button.active { background: var(--gold); border-color: var(--gold); color: #1c1d18; font-weight: 700; }
+.puzzle-filters select { width: 100%; border: 1px solid #383a33; background: #21221d; color: #d8d7d0; padding: 7px 8px; border-radius: 3px; font-size: 9px; }
+.puzzle-filters > small { color: #777970; font-size: 8px; text-align: right; }
+.puzzle-filters > small b { color: var(--gold); }
+.puzzle-list { margin-top: 12px; overflow: auto; padding-right: 4px; flex: 1 1 auto; min-height: 120px; }
+.puzzle-item { width: 100%; border: 0; background: transparent; color: #96988f; padding: 9px 10px; display: grid; grid-template-columns: 35px 1fr 12px; align-items: center; text-align: left; cursor: pointer; border-radius: 5px; transition: .2s; }
 .puzzle-item:hover { background: #252620; color: #fff; }
 .puzzle-item.active { background: #eee5d2; color: #1b1b17; }
 .puzzle-item .num { font-size: 10px; }
 .puzzle-item b { font-size: 11px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .puzzle-item i { width: 7px; height: 7px; border: 1px solid currentColor; border-radius: 50%; }
 .puzzle-item.solved i { border: 0; background: #7fa07e; box-shadow: 0 0 0 3px rgba(127,160,126,.13); }
+.empty-filter { color: #777970; font-size: 10px; line-height: 1.45; padding: 10px; }
 .sidebar-footer { margin-top: auto; padding-top: 18px; border-top: 1px solid #30312b; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .mini-stat span, .mini-stat small { display: block; }
 .mini-stat span { font-family: "Playfair Display", serif; color: var(--gold); font-size: 18px; }
@@ -129,6 +137,9 @@ kbd { background: #e4ddd0; border: 1px solid #d2c9ba; border-bottom-width: 2px; 
 .style-card[data-style="nocturne"] .piece-sample { background-image: url("assets/pieces/sliced/nocturne/2d/white/n.png"); }
 .style-card[data-style="royal-human"] .piece-sample { background-image: url("assets/pieces/sliced/royal-human/2d/white/n.png"); }
 .style-card[data-style="celestial"] .piece-sample { background-image: url("assets/pieces/sliced/celestial/2d/white/n.png"); }
+.style-card[data-style="crystal"] .piece-sample { background-image: url("assets/pieces/sliced/crystal/2d/white/n.png"); }
+.style-card[data-style="gothic"] .piece-sample { background-image: url("assets/pieces/sliced/gothic/2d/white/n.png"); }
+.style-card[data-style="viking"] .piece-sample { background-image: url("assets/pieces/sliced/viking/2d/white/n.png"); }
 
 .board[data-style="twisted"] { --board-light: #e8d0a5; --board-dark: #71482f; --board-edge: #a87345; --board-shadow: rgba(86,48,22,.32); --board-texture: repeating-linear-gradient(8deg, rgba(75,37,13,.18) 0 1px, transparent 1px 9px); }
 .board[data-style="bauhaus"] { --board-light: #f1e5cf; --board-dark: #c84f3d; --board-edge: #e0b552; --board-shadow: rgba(130,45,35,.25); --board-texture: linear-gradient(135deg, rgba(255,255,255,.2) 0 48%, rgba(0,0,0,.08) 49% 51%, transparent 52%); }
@@ -136,6 +147,9 @@ kbd { background: #e4ddd0; border: 1px solid #d2c9ba; border-bottom-width: 2px; 
 .board[data-style="nocturne"] { --board-light: #86c7df; --board-dark: #102942; --board-edge: #257eac; --board-shadow: rgba(17,106,161,.36); --board-texture: linear-gradient(145deg, rgba(255,255,255,.28), transparent 38%, rgba(0,198,255,.18) 39% 42%, transparent 43%); }
 .board[data-style="royal-human"] { --board-light: #ead9ae; --board-dark: #496b58; --board-edge: #c49a42; --board-shadow: rgba(60,86,66,.28); --board-texture: repeating-linear-gradient(45deg, rgba(197,154,66,.15) 0 2px, transparent 2px 14px); }
 .board[data-style="celestial"] { --board-light: #bce8ef; --board-dark: #102849; --board-edge: #63cce7; --board-shadow: rgba(35,151,207,.36); --board-texture: radial-gradient(circle at 22% 28%, rgba(255,255,255,.9) 0 1px, transparent 2px), radial-gradient(circle at 72% 66%, rgba(92,225,255,.8) 0 1px, transparent 2px), linear-gradient(135deg, rgba(255,255,255,.14), transparent 50%); }
+.board[data-style="crystal"] { --board-light: #9cdded; --board-dark: #12385d; --board-edge: #267aa8; --board-shadow: rgba(22,105,158,.4); --board-texture: linear-gradient(145deg, rgba(255,255,255,.38), transparent 34%, rgba(54,211,255,.22) 35% 37%, transparent 38%), linear-gradient(35deg, transparent 48%, rgba(4,30,62,.25) 49% 51%, transparent 52%); }
+.board[data-style="gothic"] { --board-light: #b7a38d; --board-dark: #29211f; --board-edge: #74502e; --board-shadow: rgba(22,13,9,.48); --board-texture: radial-gradient(circle at 50% 50%, transparent 0 35%, rgba(0,0,0,.18) 70%), repeating-linear-gradient(45deg, rgba(199,154,91,.12) 0 1px, transparent 1px 13px); }
+.board[data-style="viking"] { --board-light: #dfb875; --board-dark: #6d3e23; --board-edge: #8f572d; --board-shadow: rgba(75,39,16,.42); --board-texture: repeating-linear-gradient(4deg, rgba(81,40,14,.17) 0 1px, transparent 1px 7px), linear-gradient(90deg, rgba(255,230,164,.13), transparent 45%, rgba(54,25,8,.12)); }
 
 .toast { position: fixed; left: 50%; top: 22px; transform: translate(-50%, -20px); z-index: 30; background: #20211c; color: #fff; padding: 13px 18px; box-shadow: 0 14px 40px rgba(0,0,0,.25); font-size: 11px; opacity: 0; pointer-events: none; transition: .25s; }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
@@ -155,7 +169,7 @@ kbd { background: #e4ddd0; border: 1px solid #d2c9ba; border-bottom-width: 2px; 
 @media (max-width: 980px) {
   .shell { grid-template-columns: 78px minmax(0,1fr); }
   .sidebar { padding: 24px 12px; }
-  .brand { justify-content: center; } .brand > span:last-child, .course-label, .course-card div, .course-progress, .puzzle-item b, .sidebar-footer { display: none; }
+  .brand { justify-content: center; } .brand > span:last-child, .course-label, .course-card div, .course-progress, .puzzle-filters, .puzzle-item b, .sidebar-footer { display: none; }
   .course-card { grid-template-columns: 1fr; padding: 8px; } .course-icon { margin: auto; }
   .puzzle-item { grid-template-columns: 1fr; place-items: center; } .puzzle-item i { display: none; }
   .workspace { padding: 32px 30px 50px; grid-template-columns: minmax(380px, 1fr) 280px; gap: 28px; }

@@ -1,4 +1,4 @@
-const puzzles = [
+let puzzles = []; /* Legacy ten-puzzle demo retained below as source notes.
   { id: 1, title: "Hamppe – Steinitz", place: "Vienna, 1860", side: "black", fen: "r6r/1pp3k1/1b6/p2P1p2/P1N1pn2/2P2PP1/BP5P/4RR1K b", summary: "The combination begins with a rook sacrifice that draws the king into a mating net.", steps: [
     ["h8","h2","student","…Rxh2+","Excellent sacrifice! The white king is pulled out of safety."],
     ["h1","h2","coach","Kxh2","White is forced to accept the rook."],
@@ -41,7 +41,7 @@ const puzzles = [
     ["e7","f6","student","Qxf6+!","The queen sacrifice forces the g-pawn away from the diagonal."],
     ["g7","f6","coach","gxf6","Black has no better choice."],
     ["a3","f8","student","Bf8#","The a3–f8 diagonal opens, and the bishop delivers checkmate."] ] }
-];
+]; */
 
 const glyphs = { K:"♔",Q:"♕",R:"♖",B:"♗",N:"♘",P:"♙", k:"♚",q:"♛",r:"♜",b:"♝",n:"♞",p:"♟" };
 const boardEl = document.querySelector("#board");
@@ -51,6 +51,7 @@ const moveList = document.querySelector("#moveList");
 const modal = document.querySelector("#modal");
 let current = 0, step = 0, mistakes = 0, attempts = 0, correctAttempts = 0, selected = null;
 let position = {}, lastMove = [], solved = new Set(), style = "twisted", sound = true;
+let activeDifficulty = "all", activeCategory = "all";
 
 function parseFen(fen) {
   const out = {}, rows = fen.split(" ")[0].split("/");
@@ -61,8 +62,12 @@ function parseFen(fen) {
 }
 
 function renderList() {
-  listEl.innerHTML = puzzles.map((p,i) => `<button class="puzzle-item ${i===current?"active":""} ${solved.has(i)?"solved":""}" data-index="${i}"><span class="num">${String(p.id).padStart(2,"0")}</span><b>${p.title}</b><i></i></button>`).join("");
+  const visible = puzzles.map((p,index) => ({p,index})).filter(({p}) =>
+    (activeDifficulty === "all" || p.difficulty === activeDifficulty) &&
+    (activeCategory === "all" || p.category === activeCategory));
+  listEl.innerHTML = visible.map(({p,index}) => `<button class="puzzle-item ${index===current?"active":""} ${solved.has(index)?"solved":""}" data-index="${index}"><span class="num">${String(p.id).padStart(4,"0")}</span><b>${p.title}</b><i></i></button>`).join("") || `<p class="empty-filter">No puzzles match these filters.</p>`;
   listEl.querySelectorAll("button").forEach(b => b.onclick = () => loadPuzzle(+b.dataset.index));
+  document.querySelector("#visibleCount").textContent = visible.length.toLocaleString("en-US");
 }
 
 function renderBoard() {
@@ -157,9 +162,9 @@ function loadPuzzle(index) {
   current = index; step = 0; mistakes = 0; selected = null; lastMove = [];
   position = parseFen(puzzles[current].fen);
   const p = puzzles[current];
-  document.querySelector("#lessonNumber").textContent = `PUZZLE ${String(p.id).padStart(2,"0")} / 10`;
+  document.querySelector("#lessonNumber").textContent = `PUZZLE ${String(p.id).padStart(4,"0")} / ${puzzles.length.toLocaleString("en-US")}`;
   document.querySelector("#lessonTitle").textContent = p.title;
-  document.querySelector("#lessonPlace").textContent = p.place;
+  document.querySelector("#lessonPlace").textContent = `${p.difficulty.toUpperCase()} · ${p.category.toUpperCase()} · BOOK PAGE ${p.source_page}`;
   const badge = document.querySelector("#turnBadge");
   badge.className = `turn-badge ${p.side}`; badge.querySelector("span").textContent = `${p.side === "white" ? "WHITE":"BLACK"} TO MOVE`;
   coach.className = "coach-message";
@@ -195,4 +200,26 @@ document.querySelector("#soundBtn").onclick = e => { sound = !sound; e.currentTa
 document.querySelectorAll(".style-card").forEach(card => card.onclick = () => {
   style = card.dataset.style; document.querySelectorAll(".style-card").forEach(c=>c.classList.toggle("active",c===card)); renderBoard();
 });
-loadPuzzle(0);
+
+document.querySelectorAll("[data-difficulty]").forEach(button => button.onclick = () => {
+  activeDifficulty = button.dataset.difficulty;
+  document.querySelectorAll("[data-difficulty]").forEach(item => item.classList.toggle("active", item === button));
+  renderList();
+});
+document.querySelector("#categoryFilter").onchange = event => { activeCategory = event.target.value; renderList(); };
+
+async function init() {
+  try {
+    const response = await fetch("puzzles.json");
+    if (!response.ok) throw new Error(`Puzzle library failed to load (${response.status})`);
+    puzzles = await response.json();
+    const categories = [...new Set(puzzles.map(p => p.category))].sort();
+    document.querySelector("#categoryFilter").innerHTML = `<option value="all">All objectives</option>${categories.map(category => `<option value="${category}">${category.replace(/\b\w/g, letter => letter.toUpperCase())}</option>`).join("")}`;
+    loadPuzzle(0);
+  } catch (error) {
+    coach.className = "coach-message error";
+    coach.innerHTML = `<span class="message-label">LIBRARY ERROR</span><p>${error.message}</p>`;
+  }
+}
+
+init();

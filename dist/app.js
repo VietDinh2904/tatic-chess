@@ -50,7 +50,7 @@ const coach = document.querySelector("#coachMessage");
 const moveList = document.querySelector("#moveList");
 const modal = document.querySelector("#modal");
 let current = 0, step = 0, mistakes = 0, attempts = 0, correctAttempts = 0, selected = null;
-let position = {}, lastMove = [], solved = new Set(), style = "heritage", mode = "2d", sound = true;
+let position = {}, lastMove = [], solved = new Set(), style = "twisted", mode = "2d", sound = true;
 
 function parseFen(fen) {
   const out = {}, rows = fen.split(" ")[0].split("/");
@@ -85,7 +85,9 @@ function renderBoard() {
       const el = document.createElement("span");
       el.className = `piece ${piece === piece.toUpperCase() ? "white":"black"}`;
       if (mistakes >= 3 && expected?.[0] === sq) el.classList.add("hint-source");
-      el.textContent = glyphs[piece]; el.draggable = expected?.[2] === "student";
+      el.dataset.kind = piece.toLowerCase();
+      el.setAttribute("aria-label", `${piece === piece.toUpperCase() ? "quân trắng" : "quân đen"} ${piece.toLowerCase()}`);
+      el.draggable = expected?.[2] === "student";
       el.addEventListener("dragstart", e => e.dataTransfer.setData("text/plain", sq));
       cell.appendChild(el);
     }

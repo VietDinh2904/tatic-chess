@@ -110,8 +110,27 @@ function handleClick(square) {
 }
 function sameColor(a,b) { return a && b && (a===a.toUpperCase()) === (b===b.toUpperCase()); }
 
-function movePiece(from,to) {
-  position[to] = position[from]; delete position[from]; lastMove = [from,to]; selected = null; renderBoard();
+function movePiece(from,to,notation="") {
+  const moving = position[from];
+  if (!moving) return;
+  const isWhite = moving === moving.toUpperCase();
+  const kind = moving.toLowerCase();
+  if (kind === "p" && from[0] !== to[0] && !position[to]) {
+    delete position[to[0] + from[1]];
+  }
+  if (kind === "k" && Math.abs(from.charCodeAt(0) - to.charCodeAt(0)) === 2) {
+    const rank = from[1], kingSide = to[0] === "g";
+    const rookFrom = `${kingSide ? "h" : "a"}${rank}`;
+    const rookTo = `${kingSide ? "f" : "d"}${rank}`;
+    position[rookTo] = position[rookFrom]; delete position[rookFrom];
+  }
+  const promotion = notation.match(/=([QRBN])/i)?.[1];
+  position[to] = promotion ? (isWhite ? promotion.toUpperCase() : promotion.toLowerCase()) : moving;
+  delete position[from]; lastMove = [from,to]; selected = null;
+}
+
+function studentMovesRemaining() {
+  return puzzles[current].steps.slice(step).filter(item => item[2] === "student").length;
 }
 
 function attemptMove(from,to) {
@@ -119,10 +138,11 @@ function attemptMove(from,to) {
   if (!expected || expected[2] !== "student" || !from) return;
   attempts++;
   if (from === expected[0] && to === expected[1]) {
-    correctAttempts++; movePiece(from,to); addMove(expected); step++;
+    correctAttempts++; movePiece(from,to,expected[3]); addMove(expected); step++;
     coach.className = "coach-message success";
-    coach.innerHTML = `<span class="message-label">STRONG MOVE</span><p>${expected[4]}</p>`;
+    coach.innerHTML = `<span class="message-label">STRONG MOVE</span><p>${expected[4]}${step < puzzles[current].steps.length ? " The line is not finished yet." : ""}</p>`;
     tone(true); updateStats();
+    renderBoard();
     if (step >= puzzles[current].steps.length) return finishPuzzle();
     setTimeout(playCoachMoves, 620);
   } else {
@@ -137,9 +157,11 @@ function attemptMove(from,to) {
 function playCoachMoves() {
   let expected = puzzles[current].steps[step];
   if (!expected || expected[2] !== "coach") { renderBoard(); return; }
-  movePiece(expected[0], expected[1]); addMove(expected); step++;
+  movePiece(expected[0], expected[1],expected[3]); addMove(expected); step++;
   coach.className = "coach-message";
-  coach.innerHTML = `<span class="message-label">OPPONENT REPLIES</span><p>${expected[4]} Now find your next move.</p>`;
+  const remaining = studentMovesRemaining();
+  coach.innerHTML = `<span class="message-label">OPPONENT REPLIES</span><p>${expected[4]}${remaining ? ` Now find your next move — ${remaining} move${remaining === 1 ? "" : "s"} left in the line.` : ""}</p>`;
+  renderBoard();
   if (step >= puzzles[current].steps.length) finishPuzzle(); else setTimeout(playCoachMoves, 620);
 }
 
@@ -168,7 +190,8 @@ function loadPuzzle(index) {
   const badge = document.querySelector("#turnBadge");
   badge.className = `turn-badge ${p.side}`; badge.querySelector("span").textContent = `${p.side === "white" ? "WHITE":"BLACK"} TO MOVE`;
   coach.className = "coach-message";
-  coach.innerHTML = `<span class="message-label">YOUR TASK</span><p>${p.side === "white" ? "White":"Black"} to move. Find the strongest move in this position.</p>`;
+  const studentMoveCount = p.steps.filter(item => item[2] === "student").length;
+  coach.innerHTML = `<span class="message-label">YOUR TASK</span><p>${p.side === "white" ? "White":"Black"} to move. Play the complete solution line: ${studentMoveCount} move${studentMoveCount === 1 ? "" : "s"} for you.</p>`;
   moveList.innerHTML = `<li class="empty-move">No moves yet</li>`;
   document.querySelector("#nextBtn").disabled = !solved.has(current);
   modal.classList.remove("open"); modal.setAttribute("aria-hidden","true");

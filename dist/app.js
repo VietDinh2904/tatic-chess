@@ -170,23 +170,16 @@ function playCoachMoves() {
 
 function addMove(s) {
   moveList.querySelector(".empty-move")?.remove();
-  const p = puzzles[current];
-  const plyIndex = historyMoves.length;
-  const side = plyIndex % 2 === 0 ? p.side : (p.side === "white" ? "black" : "white");
-  const moveNumber = (p.solution_start_move || 1) + (p.side === "white" ? Math.floor(plyIndex / 2) : Math.floor((plyIndex + 1) / 2));
-  historyMoves.push({ moveNumber, side, notation: s[3], role: s[2] === "coach" ? "opponent" : "you" });
-
+  historyMoves.push({ notation: s[3], role: s[2] === "coach" ? "opponent" : "you" });
   const grouped = [];
-  historyMoves.forEach(move => {
-    let pair = grouped.find(item => item.moveNumber === move.moveNumber);
-    if (!pair) { pair = { moveNumber: move.moveNumber, white: null, black: null }; grouped.push(pair); }
-    pair[move.side] = move;
-  });
+  for (let index = 0; index < historyMoves.length; index += 2) {
+    grouped.push({ number: index / 2 + 1, first: historyMoves[index], reply: historyMoves[index + 1] || null });
+  }
   moveList.innerHTML = grouped.map(pair => `
     <li>
-      <span class="move-number">${pair.moveNumber}</span>
-      <span class="move-half ${pair.white ? "filled" : "empty"}">${pair.white ? `<b>${pair.white.notation}</b><em>${pair.white.role}</em>` : "—"}</span>
-      <span class="move-half ${pair.black ? "filled" : "empty"}">${pair.black ? `<b>${pair.black.notation}</b><em>${pair.black.role}</em>` : "—"}</span>
+      <span class="move-number">${String(pair.number).padStart(2,"0")}</span>
+      <span class="move-half filled"><b>${pair.first.notation}</b><em>${pair.first.role}</em></span>
+      <span class="move-half ${pair.reply ? "filled" : "empty"}">${pair.reply ? `<b>${pair.reply.notation}</b><em>${pair.reply.role}</em>` : "—"}</span>
     </li>`).join("");
   moveList.scrollTop = moveList.scrollHeight;
 }

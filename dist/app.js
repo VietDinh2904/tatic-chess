@@ -53,6 +53,7 @@ let current = 0, step = 0, mistakes = 0, attempts = 0, correctAttempts = 0, sele
 let position = {}, lastMove = [], solved = new Set(), style = "twisted", sound = true;
 let activeDifficulty = "all", activeCategory = "all";
 let reviewLineIndex = 0, reviewPly = -1, reviewTimer = null;
+let historyMoves = [];
 
 function parseFen(fen) {
   const out = {}, rows = fen.split(" ")[0].split("/");
@@ -140,6 +141,7 @@ function attemptMove(from,to) {
   attempts++;
   if (from === expected[0] && to === expected[1]) {
     correctAttempts++; movePiece(from,to,expected[3]); addMove(expected); step++;
+    mistakes = 0;
     coach.className = "coach-message success";
     coach.innerHTML = `<span class="message-label">STRONG MOVE</span><p>${expected[4]}${step < puzzles[current].steps.length ? " The line is not finished yet." : ""}</p>`;
     tone(true); updateStats();
@@ -168,10 +170,25 @@ function playCoachMoves() {
 
 function addMove(s) {
   moveList.querySelector(".empty-move")?.remove();
-  const li = document.createElement("li");
-  const n = moveList.children.length + 1;
-  li.innerHTML = `<span>${String(n).padStart(2,"0")}</span><b>${s[3]}</b><em>${s[2] === "coach" ? "opponent" : "you"}</em>`;
-  moveList.appendChild(li); moveList.scrollTop = moveList.scrollHeight;
+  const p = puzzles[current];
+  const plyIndex = historyMoves.length;
+  const side = plyIndex % 2 === 0 ? p.side : (p.side === "white" ? "black" : "white");
+  const moveNumber = (p.solution_start_move || 1) + (p.side === "white" ? Math.floor(plyIndex / 2) : Math.floor((plyIndex + 1) / 2));
+  historyMoves.push({ moveNumber, side, notation: s[3], role: s[2] === "coach" ? "opponent" : "you" });
+
+  const grouped = [];
+  historyMoves.forEach(move => {
+    let pair = grouped.find(item => item.moveNumber === move.moveNumber);
+    if (!pair) { pair = { moveNumber: move.moveNumber, white: null, black: null }; grouped.push(pair); }
+    pair[move.side] = move;
+  });
+  moveList.innerHTML = grouped.map(pair => `
+    <li>
+      <span class="move-number">${pair.moveNumber}</span>
+      <span class="move-half ${pair.white ? "filled" : "empty"}">${pair.white ? `<b>${pair.white.notation}</b><em>${pair.white.role}</em>` : "—"}</span>
+      <span class="move-half ${pair.black ? "filled" : "empty"}">${pair.black ? `<b>${pair.black.notation}</b><em>${pair.black.role}</em>` : "—"}</span>
+    </li>`).join("");
+  moveList.scrollTop = moveList.scrollHeight;
 }
 
 function finishPuzzle() {
@@ -265,7 +282,7 @@ function playReviewLine() {
 
 function loadPuzzle(index) {
   stopReviewPlayback();
-  current = index; step = 0; mistakes = 0; selected = null; lastMove = [];
+  current = index; step = 0; mistakes = 0; selected = null; lastMove = []; historyMoves = [];
   position = parseFen(puzzles[current].fen);
   const p = puzzles[current];
   document.querySelector("#lessonNumber").textContent = `PUZZLE ${String(p.id).padStart(4,"0")} / ${puzzles.length.toLocaleString("en-US")}`;

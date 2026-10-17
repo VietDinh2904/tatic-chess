@@ -52,6 +52,7 @@ const modal = document.querySelector("#modal");
 let current = 0, step = 0, mistakes = 0, attempts = 0, correctAttempts = 0, selected = null;
 let position = {}, lastMove = [], solved = new Set(), style = "twisted", sound = true;
 let activeDifficulty = "all", activeCategory = "all";
+let reviewLineIndex = 0, reviewPly = -1, reviewTimer = null;
 
 function parseFen(fen) {
   const out = {}, rows = fen.split(" ")[0].split("/");
@@ -176,11 +177,79 @@ function addMove(s) {
 function finishPuzzle() {
   solved.add(current); renderList(); updateStats();
   document.querySelector("#nextBtn").disabled = false;
-  document.querySelector("#successText").textContent = puzzles[current].summary;
+  const objective = puzzles[current].category.replace(/\b\w/g, letter => letter.toUpperCase());
+  document.querySelector("#successText").textContent = `Well done. You completed this ${objective} exercise. Review the full main line and every available variation directly on the board.`;
   modal.classList.add("open"); modal.setAttribute("aria-hidden","false");
 }
 
+function stopReviewPlayback() {
+  if (reviewTimer) clearTimeout(reviewTimer);
+  reviewTimer = null;
+  document.querySelector("#reviewPlay").textContent = "▶ Play line";
+}
+
+function moveLabel(index, notation) {
+  const p = puzzles[current];
+  const moveNumber = (p.solution_start_move || 1) + (p.side === "white" ? Math.floor(index / 2) : Math.floor((index + 1) / 2));
+  const side = index % 2 === 0 ? p.side : (p.side === "white" ? "black" : "white");
+  return `${moveNumber}${side === "black" ? "..." : "."}${notation}`;
+}
+
+function replayLineTo(ply) {
+  stopReviewPlayback();
+  const line = puzzles[current].solution_lines?.[reviewLineIndex];
+  if (!line) return;
+  position = parseFen(puzzles[current].fen); lastMove = []; selected = null;
+  reviewPly = Math.max(-1, Math.min(ply, line.moves.length - 1));
+  for (let index = 0; index <= reviewPly; index++) movePiece(line.moves[index][0], line.moves[index][1], line.moves[index][2]);
+  renderBoard(); renderSolutionExplorer();
+}
+
+function renderSolutionExplorer() {
+  const p = puzzles[current], lines = p.solution_lines?.length ? p.solution_lines : [{ label: "Main line", moves: p.steps.map(item => [item[0], item[1], item[3]]) }];
+  reviewLineIndex = Math.min(reviewLineIndex, lines.length - 1);
+  const line = lines[reviewLineIndex];
+  document.querySelector("#solutionLineCount").textContent = `${lines.length} ${lines.length === 1 ? "line" : "lines"}`;
+  document.querySelector("#solutionLineTabs").innerHTML = lines.map((item, index) => `<button class="${index === reviewLineIndex ? "active" : ""}" data-line="${index}">${item.label}</button>`).join("");
+  document.querySelector("#solutionLineTabs").querySelectorAll("button").forEach(button => button.onclick = () => {
+    stopReviewPlayback(); reviewLineIndex = Number(button.dataset.line); reviewPly = -1; replayLineTo(-1);
+  });
+  document.querySelector("#reviewLineTitle").textContent = line.label;
+  document.querySelector("#reviewProgress").textContent = reviewPly < 0 ? "Start position" : `${reviewPly + 1} / ${line.moves.length}`;
+  document.querySelector("#solutionMoves").innerHTML = line.moves.map((move, index) => `<button class="${index === reviewPly ? "active" : ""} ${index <= reviewPly ? "played" : ""}" data-ply="${index}">${moveLabel(index, move[2])}</button>`).join("");
+  document.querySelector("#solutionMoves").querySelectorAll("button").forEach(button => button.onclick = () => replayLineTo(Number(button.dataset.ply)));
+  document.querySelector("#reviewPrev").disabled = reviewPly < 0;
+  document.querySelector("#reviewNext").disabled = reviewPly >= line.moves.length - 1;
+}
+
+function openReview() {
+  modal.classList.remove("open"); modal.setAttribute("aria-hidden","true");
+  reviewLineIndex = 0; reviewPly = -1;
+  document.querySelector("#solutionReview").hidden = false;
+  replayLineTo(-1);
+  document.querySelector("#solutionReview").scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
+function playReviewLine() {
+  const line = puzzles[current].solution_lines?.[reviewLineIndex];
+  if (!line) return;
+  if (reviewTimer) { stopReviewPlayback(); return; }
+  if (reviewPly >= line.moves.length - 1) replayLineTo(-1);
+  document.querySelector("#reviewPlay").textContent = "Ⅱ Pause";
+  const advance = () => {
+    if (reviewPly >= line.moves.length - 1) return stopReviewPlayback();
+    position = reviewPly < 0 ? parseFen(puzzles[current].fen) : position;
+    reviewPly++;
+    const move = line.moves[reviewPly]; movePiece(move[0], move[1], move[2]);
+    renderBoard(); renderSolutionExplorer();
+    document.querySelector("#reviewPlay").textContent = "Ⅱ Pause";
+    reviewTimer = setTimeout(advance, 800);
+  };
+  advance();
+}
+
 function loadPuzzle(index) {
+  stopReviewPlayback();
   current = index; step = 0; mistakes = 0; selected = null; lastMove = [];
   position = parseFen(puzzles[current].fen);
   const p = puzzles[current];
@@ -193,6 +262,8 @@ function loadPuzzle(index) {
   const studentMoveCount = p.steps.filter(item => item[2] === "student").length;
   coach.innerHTML = `<span class="message-label">YOUR TASK</span><p>${p.side === "white" ? "White":"Black"} to move. Play the complete solution line: ${studentMoveCount} move${studentMoveCount === 1 ? "" : "s"} for you.</p>`;
   moveList.innerHTML = `<li class="empty-move">No moves yet</li>`;
+  document.querySelector("#solutionReview").hidden = true;
+  reviewLineIndex = 0; reviewPly = -1;
   document.querySelector("#nextBtn").disabled = !solved.has(current);
   modal.classList.remove("open"); modal.setAttribute("aria-hidden","true");
   renderList(); updateStats(); renderBoard();
@@ -219,6 +290,10 @@ function tone(ok) {
 document.querySelector("#resetBtn").onclick = () => loadPuzzle(current);
 document.querySelector("#nextBtn").onclick = nextPuzzle;
 document.querySelector("#modalNext").onclick = nextPuzzle;
+document.querySelector("#modalReview").onclick = openReview;
+document.querySelector("#reviewPrev").onclick = () => replayLineTo(reviewPly - 1);
+document.querySelector("#reviewNext").onclick = () => replayLineTo(reviewPly + 1);
+document.querySelector("#reviewPlay").onclick = playReviewLine;
 document.querySelector("#soundBtn").onclick = e => { sound = !sound; e.currentTarget.classList.toggle("off",!sound); };
 document.querySelectorAll(".style-card").forEach(card => card.onclick = () => {
   style = card.dataset.style; document.querySelectorAll(".style-card").forEach(c=>c.classList.toggle("active",c===card)); renderBoard();

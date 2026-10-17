@@ -195,6 +195,20 @@ function moveLabel(index, notation) {
   return `${moveNumber}${side === "black" ? "..." : "."}${notation}`;
 }
 
+function reviewCommentFor(line, index) {
+  if (index < 0) return "Start from the original position, then move forward one step at a time.";
+  const p = puzzles[current], move = line.moves[index], notation = move[2];
+  const mainStep = reviewLineIndex === 0 ? p.steps[index] : null;
+  if (mainStep?.[0] === move[0] && mainStep?.[1] === move[1] && mainStep[4]) return mainStep[4];
+  const actor = (index % 2 === 0 ? p.side : (p.side === "white" ? "black" : "white")) === "white" ? "White" : "Black";
+  if (/#|mate/i.test(notation)) return `${actor} plays ${notation} and finishes the line with checkmate.`;
+  if (/\+/.test(notation)) return `${actor} plays ${notation}, a forcing check that limits the opponent's replies.`;
+  if (/x/.test(notation)) return `${actor} plays ${notation}. This capture changes the material or opens a tactical line.`;
+  if (/O-O/.test(notation)) return `${actor} castles, improving king safety and activating the rook.`;
+  if (/=/.test(notation)) return `${actor} plays ${notation} and promotes the pawn.`;
+  return `${actor} plays ${notation}, continuing ${line.label.toLowerCase()} from the new position.`;
+}
+
 function replayLineTo(ply) {
   stopReviewPlayback();
   const line = puzzles[current].solution_lines?.[reviewLineIndex];
@@ -216,6 +230,7 @@ function renderSolutionExplorer() {
   });
   document.querySelector("#reviewLineTitle").textContent = line.label;
   document.querySelector("#reviewProgress").textContent = reviewPly < 0 ? "Start position" : `${reviewPly + 1} / ${line.moves.length}`;
+  document.querySelector("#reviewComment").textContent = reviewCommentFor(line, reviewPly);
   document.querySelector("#solutionMoves").innerHTML = line.moves.map((move, index) => `<button class="${index === reviewPly ? "active" : ""} ${index <= reviewPly ? "played" : ""}" data-ply="${index}">${moveLabel(index, move[2])}</button>`).join("");
   document.querySelector("#solutionMoves").querySelectorAll("button").forEach(button => button.onclick = () => replayLineTo(Number(button.dataset.ply)));
   document.querySelector("#reviewPrev").disabled = reviewPly < 0;

@@ -54,6 +54,7 @@ let position = {}, lastMove = [], solved = new Set(), style = "twisted", sound =
 let activeDifficulty = "all", activeCategory = "all";
 let reviewLineIndex = 0, reviewPly = -1, reviewTimer = null;
 let historyMoves = [];
+let trainingLines = [], candidateLineIndexes = [];
 
 function parseFen(fen) {
   const out = {}, rows = fen.split(" ")[0].split("/");
@@ -73,7 +74,7 @@ function renderList() {
 }
 
 function renderBoard() {
-  const expected = puzzles[current].steps[step];
+  const expected = getExpectedTrainingMove();
   boardEl.dataset.style = style;
   boardEl.innerHTML = "";
   for (let rank=8; rank>=1; rank--) for (let f=0; f<8; f++) {
@@ -131,23 +132,130 @@ function movePiece(from,to,notation="") {
   delete position[from]; lastMove = [from,to]; selected = null;
 }
 
+function buildTrainingLines(puzzle) {
+  const source = puzzle.solution_lines?.length
+    ? puzzle.solution_lines
+    : [{ label: "Main line", moves: puzzle.steps.map(item => [item[0], item[1], item[3]]) }];
+  const seen = new Set();
+  return source.filter(line => {
+    const signature = line.moves.map(move => `${move[0]}-${move[1]}`).join("|");
+    if (!signature || seen.has(signature)) return false;
+    seen.add(signature); return true;
+  });
+}
+
+function currentMoveOptions() {
+  const options = new Map();
+  candidateLineIndexes.forEach(lineIndex => {
+    const line = trainingLines[lineIndex], move = line?.moves?.[step];
+    if (!move) return;
+    const key = `${move[0]}-${move[1]}`;
+    if (!options.has(key)) options.set(key, { key, move, lineIndexes: [], labels: [] });
+    const option = options.get(key);
+    option.lineIndexes.push(lineIndex);
+    if (!option.labels.includes(line.label)) option.labels.push(line.label);
+  });
+  return [...options.values()];
+}
+
+function trainingCommentFor(move, lineIndex) {
+  const p = puzzles[current], mainStep = p.steps[step], notation = move[2];
+  if (mainStep?.[0] === move[0] && mainStep?.[1] === move[1] && mainStep[4]) return mainStep[4];
+  const line = trainingLines[lineIndex], actor = step % 2 === 0 ? "You" : "The opponent";
+  if (/#/.test(notation)) return `${actor} plays ${notation} and completes this variation with checkmate.`;
+  if (/\+/.test(notation)) return `${actor} plays ${notation}, continuing with a forcing check.`;
+  if (/x/.test(notation)) return `${actor} plays ${notation}; the capture changes the tactical position.`;
+  return `${actor} plays ${notation}, continuing ${line?.label?.toLowerCase() || "the selected variation"}.`;
+}
+
+function expectedFromOption(option) {
+  if (!option) return null;
+  const role = step % 2 === 0 ? "student" : "coach";
+  return [option.move[0], option.move[1], role, option.move[2], trainingCommentFor(option.move, option.lineIndexes[0])];
+}
+
+function getExpectedTrainingMove() {
+  const options = currentMoveOptions();
+  return options.length === 1 ? expectedFromOption(options[0]) : null;
+}
+
+function branchLabel(option) {
+  if (option.labels.includes("Main line")) {
+    const extra = option.labels.length - 1;
+    return extra ? `Main line + ${extra} variation${extra === 1 ? "" : "s"}` : "Main line";
+  }
+  return option.labels.length === 1 ? option.labels[0] : `${option.labels.length} linked variations`;
+}
+
+function hideBranchChooser() {
+  const chooser = document.querySelector("#branchChooser");
+  chooser.hidden = true;
+  document.querySelector("#branchOptions").innerHTML = "";
+}
+
+function showBranchChooser(options) {
+  const role = step % 2 === 0 ? "student" : "coach";
+  const chooser = document.querySelector("#branchChooser");
+  document.querySelector("#branchCount").textContent = `${options.length} options`;
+  document.querySelector("#branchPrompt").textContent = role === "student"
+    ? "Choose the variation you want to calculate, then play its next move on the board."
+    : "Choose which opponent reply you want to explore. The reply will then be played on the board.";
+  const container = document.querySelector("#branchOptions");
+  container.innerHTML = options.map(option => `<button data-branch="${option.key}"><b>${branchLabel(option)}</b><span>${option.move[2]}</span></button>`).join("");
+  container.querySelectorAll("button").forEach(button => button.onclick = () => selectBranch(button.dataset.branch));
+  chooser.hidden = false;
+  coach.className = "coach-message";
+  coach.innerHTML = `<span class="message-label">VARIATION POINT</span><p>${options.length} valid continuations are available. Choose one to continue the exercise.</p>`;
+  selected = null; renderBoard();
+}
+
+function selectBranch(key) {
+  const option = currentMoveOptions().find(item => item.key === key);
+  if (!option) return;
+  candidateLineIndexes = option.lineIndexes;
+  mistakes = 0; selected = null; hideBranchChooser(); updateStats(); renderBoard();
+  const expected = expectedFromOption(option);
+  if (expected[2] === "coach") {
+    coach.className = "coach-message";
+    coach.innerHTML = `<span class="message-label">VARIATION SELECTED</span><p>You chose ${expected[3]} as the opponent reply.</p>`;
+    setTimeout(playCoachMoves, 320);
+  } else {
+    coach.className = "coach-message success";
+    coach.innerHTML = `<span class="message-label">VARIATION SELECTED</span><p>Now play ${expected[3]} on the board. The position will advance only after the correct move.</p>`;
+  }
+}
+
+function prepareCurrentPly() {
+  const options = currentMoveOptions();
+  if (!options.length) return finishPuzzle();
+  if (options.length > 1) return showBranchChooser(options);
+  hideBranchChooser(); renderBoard();
+  const expected = expectedFromOption(options[0]);
+  if (expected[2] === "coach") playCoachMoves();
+}
+
 function studentMovesRemaining() {
-  return puzzles[current].steps.slice(step).filter(item => item[2] === "student").length;
+  const line = trainingLines[candidateLineIndexes[0]];
+  if (!line) return 0;
+  return line.moves.slice(step).filter((item, offset) => (step + offset) % 2 === 0).length;
 }
 
 function attemptMove(from,to) {
-  const expected = puzzles[current].steps[step];
+  const options = currentMoveOptions();
+  if (options.length > 1) { showBranchChooser(options); return; }
+  const option = options[0], expected = expectedFromOption(option);
   if (!expected || expected[2] !== "student" || !from) return;
   attempts++;
   if (from === expected[0] && to === expected[1]) {
+    candidateLineIndexes = option.lineIndexes;
     correctAttempts++; movePiece(from,to,expected[3]); addMove(expected); step++;
     mistakes = 0;
     coach.className = "coach-message success";
-    coach.innerHTML = `<span class="message-label">STRONG MOVE</span><p>${expected[4]}${step < puzzles[current].steps.length ? " The line is not finished yet." : ""}</p>`;
+    coach.innerHTML = `<span class="message-label">STRONG MOVE</span><p>${expected[4]}${currentMoveOptions().length ? " The line is not finished yet." : ""}</p>`;
     tone(true); updateStats();
     renderBoard();
-    if (step >= puzzles[current].steps.length) return finishPuzzle();
-    setTimeout(playCoachMoves, 620);
+    if (!currentMoveOptions().length) return finishPuzzle();
+    setTimeout(prepareCurrentPly, 620);
   } else {
     mistakes++; selected = null; coach.className = "coach-message error";
     coach.innerHTML = `<span class="message-label">TRY AGAIN</span><p>${mistakes < 3 ? "That is not the strongest idea. Try another piece and look for forcing moves." : "Look at the highlighted piece — it is the key to this position."}</p>`;
@@ -158,14 +266,17 @@ function attemptMove(from,to) {
 }
 
 function playCoachMoves() {
-  let expected = puzzles[current].steps[step];
+  const options = currentMoveOptions();
+  if (options.length > 1) return showBranchChooser(options);
+  const option = options[0], expected = expectedFromOption(option);
   if (!expected || expected[2] !== "coach") { renderBoard(); return; }
+  candidateLineIndexes = option.lineIndexes;
   movePiece(expected[0], expected[1],expected[3]); addMove(expected); step++;
   coach.className = "coach-message";
   const remaining = studentMovesRemaining();
   coach.innerHTML = `<span class="message-label">OPPONENT REPLIES</span><p>${expected[4]}${remaining ? ` Now find your next move — ${remaining} move${remaining === 1 ? "" : "s"} left in the line.` : ""}</p>`;
   renderBoard();
-  if (step >= puzzles[current].steps.length) finishPuzzle(); else setTimeout(playCoachMoves, 620);
+  if (!currentMoveOptions().length) finishPuzzle(); else setTimeout(prepareCurrentPly, 620);
 }
 
 function addMove(s) {
@@ -185,6 +296,7 @@ function addMove(s) {
 }
 
 function finishPuzzle() {
+  hideBranchChooser();
   solved.add(current); renderList(); updateStats();
   document.querySelector("#nextBtn").disabled = false;
   const objective = puzzles[current].category.replace(/\b\w/g, letter => letter.toUpperCase());
@@ -278,6 +390,8 @@ function loadPuzzle(index) {
   current = index; step = 0; mistakes = 0; selected = null; lastMove = []; historyMoves = [];
   position = parseFen(puzzles[current].fen);
   const p = puzzles[current];
+  trainingLines = buildTrainingLines(p);
+  candidateLineIndexes = trainingLines.map((line, lineIndex) => lineIndex);
   document.querySelector("#lessonNumber").textContent = `PUZZLE ${String(p.id).padStart(4,"0")} / ${puzzles.length.toLocaleString("en-US")}`;
   document.querySelector("#lessonTitle").textContent = p.title;
   document.querySelector("#lessonPlace").textContent = `${p.difficulty.toUpperCase()} · ${p.category.toUpperCase()} · BOOK PAGE ${p.source_page}`;
@@ -287,11 +401,12 @@ function loadPuzzle(index) {
   const studentMoveCount = p.steps.filter(item => item[2] === "student").length;
   coach.innerHTML = `<span class="message-label">YOUR TASK</span><p>${p.side === "white" ? "White":"Black"} to move. Play the complete solution line: ${studentMoveCount} move${studentMoveCount === 1 ? "" : "s"} for you.</p>`;
   moveList.innerHTML = `<li class="empty-move">No moves yet</li>`;
+  hideBranchChooser();
   document.querySelector("#solutionReview").hidden = true;
   reviewLineIndex = 0; reviewPly = -1;
   document.querySelector("#nextBtn").disabled = !solved.has(current);
   modal.classList.remove("open"); modal.setAttribute("aria-hidden","true");
-  renderList(); updateStats(); renderBoard();
+  renderList(); updateStats(); renderBoard(); prepareCurrentPly();
 }
 
 function updateStats() {

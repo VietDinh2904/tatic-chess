@@ -200,6 +200,10 @@ kbd { background: #e4ddd0; border: 1px solid #d2c9ba; border-bottom-width: 2px; 
 .success-modal p { color: var(--muted); font-size: 12px; line-height: 1.55; }
 .success-modal button { margin-top: 17px; width: 100%; border: 0; background: #20211c; color: #fff; padding: 14px 16px; display: flex; justify-content: space-between; cursor: pointer; }
 .success-modal .modal-secondary { margin-top: 8px; justify-content: center; background: transparent; color: #54544e; border: 1px solid #cfc7ba; }
+.move-feedback { z-index: 45; }
+.move-feedback-card { text-align: left; border-top: 4px solid #648468; }
+.move-feedback-card h2 { margin-top: 12px; }
+.move-feedback-card p { min-height: 38px; font-size: 13px; }
 
 @keyframes piecePulse { to { transform: scale(1.12); filter: drop-shadow(0 0 13px #ffb09f); } }
 @keyframes squarePulse { 50% { opacity: .55; } }

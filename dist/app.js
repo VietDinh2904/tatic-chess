@@ -49,12 +49,14 @@ const listEl = document.querySelector("#puzzleList");
 const coach = document.querySelector("#coachMessage");
 const moveList = document.querySelector("#moveList");
 const modal = document.querySelector("#modal");
+const moveFeedback = document.querySelector("#moveFeedback");
 let current = 0, step = 0, mistakes = 0, attempts = 0, correctAttempts = 0, selected = null;
 let position = {}, lastMove = [], solved = new Set(), style = "twisted", sound = true;
 let activeDifficulty = "all", activeCategory = "all";
 let reviewLineIndex = 0, reviewPly = -1, reviewTimer = null;
 let historyMoves = [];
 let trainingLines = [], candidateLineIndexes = [];
+let pendingAfterFeedback = null;
 
 function parseFen(fen) {
   const out = {}, rows = fen.split(" ")[0].split("/");
@@ -96,7 +98,7 @@ function renderBoard() {
       const pieceColor = piece === piece.toUpperCase() ? "white" : "black";
       el.src = `assets/pieces/sliced/${style}/2d/${pieceColor}/${piece.toLowerCase()}.png`;
       el.alt = `${pieceColor} ${piece.toLowerCase()}`;
-      el.draggable = expected?.[2] === "student";
+      el.draggable = expected?.[2] === "student" && !moveFeedback.classList.contains("open");
       el.addEventListener("dragstart", e => e.dataTransfer.setData("text/plain", sq));
       cell.appendChild(el);
     }
@@ -105,6 +107,7 @@ function renderBoard() {
 }
 
 function handleClick(square) {
+  if (moveFeedback.classList.contains("open")) return;
   if (!position[square] && !selected) return;
   if (!selected) { selected = square; renderBoard(); return; }
   if (selected === square) { selected = null; renderBoard(); return; }
@@ -145,17 +148,15 @@ function buildTrainingLines(puzzle) {
 }
 
 function currentMoveOptions() {
-  const options = new Map();
-  candidateLineIndexes.forEach(lineIndex => {
-    const line = trainingLines[lineIndex], move = line?.moves?.[step];
-    if (!move) return;
-    const key = `${move[0]}-${move[1]}`;
-    if (!options.has(key)) options.set(key, { key, move, lineIndexes: [], labels: [] });
-    const option = options.get(key);
-    option.lineIndexes.push(lineIndex);
-    if (!option.labels.includes(line.label)) option.labels.push(line.label);
-  });
-  return [...options.values()];
+  const move = puzzles[current]?.steps?.[step];
+  if (!move) return [];
+  return [{
+    key: `${move[0]}-${move[1]}`,
+    move: [move[0], move[1], move[3]],
+    stepData: move,
+    lineIndexes: [0],
+    labels: ["Main line"]
+  }];
 }
 
 function trainingCommentFor(move, lineIndex) {
@@ -170,13 +171,13 @@ function trainingCommentFor(move, lineIndex) {
 
 function expectedFromOption(option) {
   if (!option) return null;
+  if (option.stepData) return option.stepData;
   const role = step % 2 === 0 ? "student" : "coach";
   return [option.move[0], option.move[1], role, option.move[2], trainingCommentFor(option.move, option.lineIndexes[0])];
 }
 
 function getExpectedTrainingMove() {
-  const options = currentMoveOptions();
-  return options.length === 1 ? expectedFromOption(options[0]) : null;
+  return puzzles[current]?.steps?.[step] || null;
 }
 
 function branchLabel(option) {
@@ -228,34 +229,51 @@ function selectBranch(key) {
 function prepareCurrentPly() {
   const options = currentMoveOptions();
   if (!options.length) return finishPuzzle();
-  if (options.length > 1) return showBranchChooser(options);
   hideBranchChooser(); renderBoard();
   const expected = expectedFromOption(options[0]);
   if (expected[2] === "coach") playCoachMoves();
 }
 
 function studentMovesRemaining() {
-  const line = trainingLines[candidateLineIndexes[0]];
-  if (!line) return 0;
-  return line.moves.slice(step).filter((item, offset) => (step + offset) % 2 === 0).length;
+  return (puzzles[current]?.steps || []).slice(step).filter(item => item[2] === "student").length;
+}
+
+function showCorrectMoveFeedback(expected) {
+  document.querySelector("#moveFeedbackTitle").textContent = `${expected[3]} is correct`;
+  document.querySelector("#moveFeedbackText").textContent = expected[4] || "You found the strongest move in the position.";
+  moveFeedback.classList.add("open");
+  moveFeedback.setAttribute("aria-hidden", "false");
+  renderBoard();
+}
+
+function closeCorrectMoveFeedback() {
+  moveFeedback.classList.remove("open");
+  moveFeedback.setAttribute("aria-hidden", "true");
+  const next = pendingAfterFeedback;
+  pendingAfterFeedback = null;
+  if (next) next();
 }
 
 function attemptMove(from,to) {
+  if (moveFeedback.classList.contains("open")) return;
   const options = currentMoveOptions();
-  if (options.length > 1) { showBranchChooser(options); return; }
   const option = options[0], expected = expectedFromOption(option);
   if (!expected || expected[2] !== "student" || !from) return;
   attempts++;
   if (from === expected[0] && to === expected[1]) {
-    candidateLineIndexes = option.lineIndexes;
     correctAttempts++; movePiece(from,to,expected[3]); addMove(expected); step++;
     mistakes = 0;
     coach.className = "coach-message success";
     coach.innerHTML = `<span class="message-label">STRONG MOVE</span><p>${expected[4]}${currentMoveOptions().length ? " The line is not finished yet." : ""}</p>`;
     tone(true); updateStats();
     renderBoard();
-    if (!currentMoveOptions().length) return finishPuzzle();
-    setTimeout(prepareCurrentPly, 620);
+    pendingAfterFeedback = () => {
+      const next = puzzles[current]?.steps?.[step];
+      if (!next) return finishPuzzle();
+      if (next[2] === "coach") playCoachMoves();
+      else prepareCurrentPly();
+    };
+    showCorrectMoveFeedback(expected);
   } else {
     mistakes++; selected = null; coach.className = "coach-message error";
     coach.innerHTML = `<span class="message-label">TRY AGAIN</span><p>${mistakes < 3 ? "That is not the strongest idea. Try another piece and look for forcing moves." : "Look at the highlighted piece — it is the key to this position."}</p>`;
@@ -267,7 +285,6 @@ function attemptMove(from,to) {
 
 function playCoachMoves() {
   const options = currentMoveOptions();
-  if (options.length > 1) return showBranchChooser(options);
   const option = options[0], expected = expectedFromOption(option);
   if (!expected || expected[2] !== "coach") { renderBoard(); return; }
   candidateLineIndexes = option.lineIndexes;
@@ -276,7 +293,7 @@ function playCoachMoves() {
   const remaining = studentMovesRemaining();
   coach.innerHTML = `<span class="message-label">OPPONENT REPLIES</span><p>${expected[4]}${remaining ? ` Now find your next move — ${remaining} move${remaining === 1 ? "" : "s"} left in the line.` : ""}</p>`;
   renderBoard();
-  if (!currentMoveOptions().length) finishPuzzle(); else setTimeout(prepareCurrentPly, 620);
+  if (!currentMoveOptions().length) finishPuzzle(); else setTimeout(prepareCurrentPly, 420);
 }
 
 function addMove(s) {
@@ -406,6 +423,7 @@ function loadPuzzle(index) {
   reviewLineIndex = 0; reviewPly = -1;
   document.querySelector("#nextBtn").disabled = !solved.has(current);
   modal.classList.remove("open"); modal.setAttribute("aria-hidden","true");
+  moveFeedback.classList.remove("open"); moveFeedback.setAttribute("aria-hidden","true"); pendingAfterFeedback = null;
   renderList(); updateStats(); renderBoard(); prepareCurrentPly();
 }
 
@@ -431,6 +449,7 @@ document.querySelector("#resetBtn").onclick = () => loadPuzzle(current);
 document.querySelector("#nextBtn").onclick = nextPuzzle;
 document.querySelector("#modalNext").onclick = nextPuzzle;
 document.querySelector("#modalReview").onclick = openReview;
+document.querySelector("#moveFeedbackContinue").onclick = closeCorrectMoveFeedback;
 document.querySelector("#reviewPrev").onclick = () => replayLineTo(reviewPly - 1);
 document.querySelector("#reviewNext").onclick = () => replayLineTo(reviewPly + 1);
 document.querySelector("#reviewPlay").onclick = playReviewLine;
@@ -448,9 +467,10 @@ document.querySelector("#categoryFilter").onchange = event => { activeCategory =
 
 async function init() {
   try {
-    const response = await fetch("puzzles.json");
+    const [response, endgameResponse] = await Promise.all([fetch("puzzles.json"), fetch("endgames.json")]);
     if (!response.ok) throw new Error(`Puzzle library failed to load (${response.status})`);
-    puzzles = await response.json();
+    if (!endgameResponse.ok) throw new Error(`Endgame library failed to load (${endgameResponse.status})`);
+    puzzles = [...await response.json(), ...await endgameResponse.json()];
     const categories = [...new Set(puzzles.map(p => p.category))].sort();
     document.querySelector("#categoryFilter").innerHTML = `<option value="all">All objectives</option>${categories.map(category => `<option value="${category}">${category.replace(/\b\w/g, letter => letter.toUpperCase())}</option>`).join("")}`;
     loadPuzzle(0);

@@ -1,0 +1,525 @@
+[
+  {
+    "id": 1129,
+    "title": "Endgame 25 - Cheparinov vs. Prohaszka",
+    "difficulty": "easy",
+    "source_page": 103,
+    "side": "white",
+    "fen": "5K2/8/8/5Pk1/7R/8/5n2/8 w",
+    "category": "knight vs pawn",
+    "summary": "Use the rook as a decoy so the passed f-pawn outruns the knight.",
+    "steps": [
+      ["f5", "f6", "student", "f6!", "The pawn advances with tempo and the knight cannot build a stable blockade."],
+      ["g5", "h4", "coach", "Kxh4", "Black accepts the rook, but the king is drawn away from the promotion square."],
+      ["f6", "f7", "student", "f7", "The pawn reaches the seventh rank and cannot be stopped in time."]
+    ],
+    "interactive": true,
+    "solution_start_move": 68,
+    "solution_lines": [
+      {"label": "Main line", "moves": [["f5","f6","f6!"],["g5","h4","Kxh4"],["f6","f7","f7"]]},
+      {"label": "Knight heads to e4", "moves": [["f5","f6","f6!"],["g5","h4","Kxh4"],["f6","f7","f7"],["f2","e4","Ne4"],["f8","e7","Ke7"]]},
+      {"label": "Knight heads to g4", "moves": [["f5","f6","f6!"],["g5","h4","Kxh4"],["f6","f7","f7"],["f2","g4","Ng4"],["f8","g7","Kg7"]]}
+    ]
+  },
+  {
+    "id": 1130,
+    "title": "Endgame 26 - Mednis vs. Fontaine",
+    "difficulty": "medium",
+    "source_page": 103,
+    "side": "black",
+    "fen": "8/7N/1K6/8/6p1/8/7k/8 b",
+    "category": "knight vs pawn",
+    "summary": "Test the exact knight circuit needed to stop a rook pawn.",
+    "steps": [
+      ["g4", "g3", "student", "g3", "The pawn advances and asks the knight to find its only drawing square."],
+      ["h7", "g5", "coach", "Ng5!", "The knight reaches the unique circuit that keeps the pawn under control."],
+      ["h2", "g1", "student", "Kg1", "The king supports the pawn and tests White's setup."],
+      ["b6", "c5", "coach", "Kc5", "White brings the king closer while the knight guards the promotion route."],
+      ["g3", "g2", "student", "g2", "The pawn reaches the second rank."],
+      ["c5", "d4", "coach", "Kd4", "White's king approaches without disturbing the knight circuit."],
+      ["g1", "f2", "student", "Kf2", "The king tries to drive the knight away."],
+      ["g5", "h3", "coach", "Nh3+", "The check preserves the blockade."],
+      ["f2", "g3", "student", "Kg3", "Black keeps pressing the knight."],
+      ["h3", "g1", "coach", "Ng1", "The knight settles in front of the pawn and holds the draw."]
+    ],
+    "interactive": true,
+    "solution_start_move": 53,
+    "solution_lines": [
+      {"label": "Main line", "moves": [["g4","g3","g3"],["h7","g5","Ng5!"],["h2","g1","Kg1"],["b6","c5","Kc5"],["g3","g2","g2"],["c5","d4","Kd4"],["g1","f2","Kf2"],["g5","h3","Nh3+"],["f2","g3","Kg3"],["h3","g1","Ng1"]]},
+      {"label": "Immediate pawn push", "moves": [["g4","g3","g3"],["h7","g5","Ng5!"],["g3","g2","g2"],["g5","f3","Nf3+"]]},
+      {"label": "Wrong knight square", "moves": [["g4","g3","g3"],["h7","f6","Nf6?"],["h2","g1","Kg1"]]}
+    ]
+  },
+  {
+    "id": 1131,
+    "title": "Endgame 27 - Petraki vs. Papadimitriou",
+    "difficulty": "medium",
+    "source_page": 103,
+    "side": "white",
+    "fen": "8/8/2K5/8/8/p2N4/k7/8 w",
+    "category": "knight vs pawn",
+    "summary": "Choose the knight check that lets the king join the defence.",
+    "steps": [
+      ["d3", "b4", "student", "Nb4+!", "The knight checks from the correct circuit and keeps the a-pawn contained."],
+      ["a2", "b3", "coach", "Kb3", "Black steps toward the pawn's escort square."],
+      ["c6", "c5", "student", "Kc5", "The king joins the defence and the position is drawn."]
+    ],
+    "interactive": true,
+    "solution_start_move": 66,
+    "solution_lines": [
+      {"label": "Main line", "moves": [["d3","b4","Nb4+!"],["a2","b3","Kb3"],["c6","c5","Kc5"]]},
+      {"label": "Alternative defence", "moves": [["d3","b4","Nb4+!"],["a2","b3","Kb3"],["b4","d3","Nd3"]]},
+      {"label": "Wrong circuit", "moves": [["d3","c1","Nc1+?"],["a2","b1","Kb1!"],["c1","e2","Ne2"],["b1","b2","Kb2"]]}
+    ]
+  },
+  {
+    "id": 1132,
+    "title": "Endgame 28 - Dale vs. Devarajh",
+    "difficulty": "easy",
+    "source_page": 104,
+    "side": "black",
+    "fen": "8/8/8/8/p6N/8/k1K5/8 b",
+    "category": "knight vs pawn",
+    "summary": "Avoid the pawn push that permits a rare lone-knight mating net.",
+    "steps": [
+      ["a2", "a3", "student", "Ka3!", "The king move preserves the draw; pushing the pawn would allow a mating net."],
+      ["c2", "c3", "coach", "Kc3", "White centralizes the king."],
+      ["a3", "a2", "student", "Ka2", "Black keeps the king mobile and does not lock it behind the pawn."]
+    ],
+    "interactive": true,
+    "solution_start_move": 63,
+    "solution_lines": [
+      {"label": "Main line", "moves": [["a2","a3","Ka3!"],["c2","c3","Kc3"],["a3","a2","Ka2"]]},
+      {"label": "Fatal pawn push", "moves": [["a4","a3","a3??"],["h4","f3","Nf3"],["a2","a1","Ka1"],["f3","d2","Nd2"],["a1","a2","Ka2"],["d2","e4","Ne4"],["a2","a1","Ka1"],["e4","c5","Nc5"],["a1","a2","Ka2"],["c5","d3","Nd3"],["a2","a1","Ka1"],["d3","c1","Nc1"],["a3","a2","a2"],["c1","b3","Nb3#"]]}
+    ]
+  },
+  {
+    "id": 1133,
+    "title": "Endgame 29 - Spain vs. Ker",
+    "difficulty": "hard",
+    "source_page": 104,
+    "side": "black",
+    "fen": "8/8/8/p6K/4N1p1/8/k7/8 b",
+    "category": "knight vs pawn",
+    "summary": "Use the distant a-pawn first; the apparently urgent g-pawn move throws away the win.",
+    "steps": [
+      ["a5", "a4", "student", "a4!", "The remote passed pawn advances before the knight can reach the right circuit."],
+      ["h5", "g4", "coach", "Kxg4", "White removes the g-pawn but loses valuable time."],
+      ["a4", "a3", "student", "a3", "The a-pawn is now too far advanced for the knight to stop."],
+      ["e4", "d2", "coach", "Nd2", "The knight tries to get back on track."],
+      ["a2", "a1", "student", "Ka1!", "The corner square makes the knight's route ineffective."]
+    ],
+    "interactive": true,
+    "solution_start_move": 64,
+    "solution_lines": [
+      {"label": "Main line", "moves": [["a5","a4","a4!"],["h5","g4","Kxg4"],["a4","a3","a3"],["e4","d2","Nd2"],["a2","a1","Ka1!"]]},
+      {"label": "Knight check try", "moves": [["a5","a4","a4!"],["e4","c3","Nc3+"],["a2","b3","Kb3"],["c3","a4","Nxa4"],["g4","g3","g3!"]]},
+      {"label": "Wrong pawn", "moves": [["g4","g3","g3?"],["e4","g3","Nxg3"],["a5","a4","a4"],["g3","e2","Ne2!"]]}
+    ]
+  },
+  {
+    "id": 1134,
+    "title": "Endgame 30 - Eingorn vs. Beliavsky",
+    "difficulty": "medium",
+    "source_page": 105,
+    "side": "white",
+    "fen": "8/8/6K1/1k6/3n3P/8/8/8 w",
+    "category": "knight vs pawn",
+    "summary": "The king must keep the knight at optimal three-square distance.",
+    "steps": [
+      ["g6", "f6", "student", "Kf6!", "The king keeps the knight at the optimal three-square diagonal distance."],
+      ["d4", "c2", "coach", "Nc2", "The knight tries to approach the promotion route."],
+      ["h4", "h5", "student", "h5", "The pawn advances while the king controls the checking squares."],
+      ["c2", "e3", "coach", "Ne3", "Black seeks a checking route."],
+      ["f6", "g5", "student", "Kg5!", "The king again fences the knight off and guarantees promotion."]
+    ],
+    "interactive": true,
+    "solution_start_move": 70,
+    "solution_lines": [
+      {"label": "Main line", "moves": [["g6","f6","Kf6!"],["d4","c2","Nc2"],["h4","h5","h5"],["c2","e3","Ne3"],["f6","g5","Kg5!"]]},
+      {"label": "Knight to e2", "moves": [["g6","f6","Kf6!"],["d4","e2","Ne2"],["h4","h5","h5"],["e2","g3","Ng3"],["h5","h6","h6"]]},
+      {"label": "Knight to f3", "moves": [["g6","f6","Kf6!"],["d4","f3","Nf3"],["h4","h5","h5"],["f3","h2","Nh2"],["f6","f5","Kf5!"]]}
+    ]
+  },
+  {
+    "id": 1135,
+    "title": "Endgame 31 - Rohackova vs. Dinzik",
+    "difficulty": "hard",
+    "source_page": 106,
+    "side": "black",
+    "fen": "8/1K6/1P6/8/3n4/5kp1/1R6/8 b",
+    "category": "knight vs pawn",
+    "summary": "Coordinate the knight and g-pawn instead of pushing immediately.",
+    "steps": [
+      ["d4", "e6", "student", "Ne6!", "The knight takes responsibility for the b-pawn while the king supports the g-pawn." ]
+    ],
+    "interactive": true,
+    "solution_start_move": 62,
+    "solution_lines": [
+      {"label": "Main line", "moves": [["d4","e6","Ne6!"]]},
+      {"label": "Premature pawn push", "moves": [["g3","g2","g2?"],["b2","g2","Rxg2"],["f3","g2","Kxg2"],["b7","c8","Kc8!"]]},
+      {"label": "Game continuation", "moves": [["g3","g2","g2?"],["b2","g2","Rxg2"],["f3","g2","Kxg2"],["b7","b8","Kb8?"],["g2","f3","Kf3??"],["b6","b7","b7"]]}
+    ]
+  },
+  {
+    "id": 1136,
+    "title": "Endgame 32 - Nogueiras vs. Gongora Reyes",
+    "difficulty": "hard",
+    "source_page": 106,
+    "side": "black",
+    "fen": "8/8/4kP2/3n2K1/4N3/p7/P7/8 b",
+    "category": "knight vs pawn",
+    "summary": "Do not exchange knights too early; first reach the correct defensive circuit.",
+    "steps": [
+      ["d5", "e3", "student", "Ne3!", "The knight preserves the draw by reaching the correct circuit before sacrificing itself."],
+      ["g5", "g6", "coach", "Kg6", "White brings the king closer."],
+      ["e3", "g4", "student", "Ng4", "The knight stays in front of the pawn and prepares to sacrifice on f6."],
+      ["g6", "g7", "coach", "Kg7", "White escorts the pawn."],
+      ["g4", "f6", "student", "Nxf6", "Now the knight sacrifice is correctly timed and the king cannot be imprisoned."]
+    ],
+    "interactive": true,
+    "solution_start_move": 75,
+    "solution_lines": [
+      {"label": "Main line", "moves": [["d5","e3","Ne3!"],["g5","g6","Kg6"],["e3","g4","Ng4"],["g6","g7","Kg7"],["g4","f6","Nxf6"]]},
+      {"label": "Early capture", "moves": [["d5","f6","Nxf6?"],["e4","f6","Nxf6"],["e6","e5","Ke5"],["f6","d7","Nd7+"]]},
+      {"label": "Mating net", "moves": [["d5","f6","Nxf6?"],["e4","f6","Nxf6"],["e6","e5","Ke5"],["f6","d7","Nd7+"],["e5","d4","Kd4"],["g5","f4","Kf4"]]}
+    ]
+  },
+  {
+    "id": 1137,
+    "title": "Endgame 33 - Garcia vs. Navarrete Delgado",
+    "difficulty": "medium",
+    "source_page": 107,
+    "side": "white",
+    "fen": "5k2/7p/4PK2/7P/8/8/1n6/8 w",
+    "category": "knight vs pawn",
+    "summary": "Give the checking pawn move and avoid walking into a lone-knight mating net.",
+    "steps": [
+      ["e6", "e7", "student", "e7+!", "The checking advance forces the black king back and keeps the white king out of the corner."],
+      ["f8", "e8", "coach", "Ke8", "Black blocks the promotion square."],
+      ["f6", "g7", "student", "Kg7", "The king approaches the h-pawn while preserving the draw."],
+      ["e8", "e7", "coach", "Kxe7", "Black removes the advanced pawn."],
+      ["g7", "h7", "student", "Kxh7", "White takes the final pawn without entering the mating net."],
+      ["e7", "f7", "coach", "Kf7", "The black king approaches."],
+      ["h7", "h6", "student", "Kh6", "White keeps enough distance from the knight and holds."]
+    ],
+    "interactive": true,
+    "solution_start_move": 56,
+    "solution_lines": [
+      {"label": "Main line", "moves": [["e6","e7","e7+!"],["f8","e8","Ke8"],["f6","g7","Kg7"],["e8","e7","Kxe7"],["g7","h7","Kxh7"],["e7","f7","Kf7"],["h7","h6","Kh6"]]},
+      {"label": "Corner trap", "moves": [["h5","h6","h6?"],["b2","d3","Nd3!"],["e6","e7","e7+"],["f8","e8","Ke8"],["f6","g7","Kg7"],["e8","e7","Kxe7"]]}
+    ]
+  },
+  {
+    "id": 1138,
+    "title": "Endgame 34 - Rios vs. Li Chao",
+    "difficulty": "hard",
+    "source_page": 107,
+    "side": "white",
+    "fen": "8/8/8/7p/5K1k/5P2/p1N5/8 w",
+    "category": "knight vs pawn",
+    "summary": "The king must help its own passed pawn rather than chase the enemy pawns.",
+    "steps": [
+      ["f4", "e5", "student", "Ke5!", "The king heads toward the f-pawn and keeps the promotion race balanced."],
+      ["h4", "g3", "coach", "Kg3", "Black attacks the f-pawn."],
+      ["f3", "f4", "student", "f4", "The pawn advances before the king can blockade it."],
+      ["h5", "h4", "coach", "h4", "Black starts the counter-race."],
+      ["f4", "f5", "student", "f5", "White keeps pace and reaches a drawn queen race."]
+    ],
+    "interactive": true,
+    "solution_start_move": 51,
+    "solution_lines": [
+      {"label": "Main line", "moves": [["f4","e5","Ke5!"],["h4","g3","Kg3"],["f3","f4","f4"],["h5","h4","h4"],["f4","f5","f5"],["h4","h3","h3"],["f5","f6","f6"]]},
+      {"label": "Wrong king move", "moves": [["f4","e3","Ke3?"],["h4","g3","Kg3"],["f3","f4","f4"],["g3","g4","Kg4"]]}
+    ]
+  },
+  {
+    "id": 1139,
+    "title": "Endgame 35 - Stangl vs. Schneider",
+    "difficulty": "hard",
+    "source_page": 108,
+    "side": "white",
+    "fen": "8/8/4N3/p6p/P1P4b/4kp2/8/5K2 w",
+    "category": "knight vs pawn",
+    "summary": "Create a forcing pawn race, then return the knight to its saving circuit.",
+    "steps": [
+      ["c4", "c5", "student", "c5!", "The c-pawn forces Black's bishop and h-pawn into a precise race."],
+      ["h4", "g3", "coach", "Bg3", "The bishop takes the diagonal toward c7."],
+      ["c5", "c6", "student", "c6", "The pawn continues to gain tempi."],
+      ["h5", "h4", "coach", "h4", "Black starts the kingside race."],
+      ["c6", "c7", "student", "c7", "White forces the bishop to give itself up for the pawn."],
+      ["g3", "c7", "coach", "Bxc7", "The bishop stops promotion."],
+      ["e6", "c7", "student", "Nxc7", "The knight removes the bishop and turns back toward the defensive circuit."],
+      ["h4", "h3", "coach", "h3", "The h-pawn runs."],
+      ["c7", "d5", "student", "Nd5+", "The tempo-gaining check starts the saving route."]
+    ],
+    "interactive": true,
+    "solution_start_move": 1,
+    "solution_lines": [
+      {"label": "Main line", "moves": [["c4","c5","c5!"],["h4","g3","Bg3"],["c5","c6","c6"],["h5","h4","h4"],["c6","c7","c7"],["g3","c7","Bxc7"],["e6","c7","Nxc7"],["h4","h3","h3"],["c7","d5","Nd5+"]]},
+      {"label": "Wrong knight plan", "moves": [["e6","g7","Ng7?"],["h4","f6","Bf6"],["g7","h5","Nxh5"],["f6","d4","Bd4"]]}
+    ]
+  },
+  {
+    "id": 1140,
+    "title": "Endgame 36 - Kubikova vs. Skazelova",
+    "difficulty": "hard",
+    "source_page": 109,
+    "side": "white",
+    "fen": "8/8/2p5/2P5/5K1p/3k1N1b/5r2/2R5 w",
+    "category": "knight vs pawn",
+    "summary": "Place the rook on g1 immediately and preserve the knight-fork resource.",
+    "steps": [
+      ["c1", "g1", "student", "Rg1!", "The rook prevents ...Bg2 without helping the black king escape the knight checks."],
+      ["h3", "g2", "coach", "Bg2", "Black forces the exchange on g2."],
+      ["g1", "g2", "student", "Rxg2", "White accepts the exchange and prepares a knight tempo."],
+      ["f2", "g2", "coach", "Rxg2", "The black rook recaptures."],
+      ["f3", "e1", "student", "Ne1+", "The knight check gains the tempo needed to reach the pawn."],
+      ["d3", "e2", "coach", "Ke2", "The king chooses one of the available squares."],
+      ["e1", "g2", "student", "Nxg2", "White removes the rook and reaches the drawing setup."]
+    ],
+    "interactive": true,
+    "solution_start_move": 55,
+    "solution_lines": [
+      {"label": "Main line", "moves": [["c1","g1","Rg1!"],["h3","g2","Bg2"],["g1","g2","Rxg2"],["f2","g2","Rxg2"],["f3","e1","Ne1+"],["d3","e2","Ke2"],["e1","g2","Nxg2"]]},
+      {"label": "King to d2", "moves": [["c1","g1","Rg1!"],["h3","g2","Bg2"],["g1","g2","Rxg2"],["f2","g2","Rxg2"],["f3","e1","Ne1+"],["d3","d2","Kd2"],["e1","g2","Nxg2"]]},
+      {"label": "Premature check", "moves": [["c1","d1","Rd1+?"],["d3","c2","Kc2"],["d1","g1","Rg1"],["h3","g2","Bg2"]]}
+    ]
+  },
+  {
+    "id": 1141,
+    "title": "Endgame 37 - Barrero Garcia vs. Korneev",
+    "difficulty": "hard",
+    "source_page": 110,
+    "side": "black",
+    "fen": "6Q1/8/8/8/5K2/8/4k3/7q b",
+    "category": "queen vs pawn",
+    "summary": "Avoid the second-rank horizontal check and keep the corner fortress intact.",
+    "steps": [
+      ["e2", "f1", "student", "Kf1", "The king chooses the only square that keeps the drawing mechanism available."],
+      ["g8", "c4", "coach", "Qc4+", "White checks and brings the queen closer."],
+      ["f1", "g1", "student", "Kg1!", "The king avoids the fatal horizontal check on the second rank."],
+      ["c4", "c5", "coach", "Qc5+", "White continues checking."],
+      ["g1", "h2", "student", "Kh2!", "The king uses the corner and the queen interposition resource to hold."]
+    ],
+    "interactive": true,
+    "solution_start_move": 66,
+    "solution_lines": [
+      {"label": "Main line", "moves": [["e2","f1","Kf1"],["g8","c4","Qc4+"],["f1","g1","Kg1!"],["c4","c5","Qc5+"],["g1","h2","Kh2!"]]},
+      {"label": "Common mistake", "moves": [["e2","f1","Kf1"],["g8","c4","Qc4+"],["f1","f2","Kf2?"],["c4","c2","Qc2+"],["f2","f1","Kf1"],["c2","d1","Qd1+"]]},
+      {"label": "Immediate loss", "moves": [["e2","f2","Kf2?"],["g8","a2","Qa2+"]]}
+    ]
+  },
+  {
+    "id": 1142,
+    "title": "Endgame 38 - Drimer vs. Stein",
+    "difficulty": "medium",
+    "source_page": 111,
+    "side": "black",
+    "fen": "8/8/5Kp1/6Rp/7P/6r1/6k1/8 b",
+    "category": "queen vs pawn",
+    "summary": "Sacrifice the rook to ensure the new queen controls the promotion square.",
+    "steps": [
+      ["g3", "g5", "student", "Rxg5!", "The rook sacrifice forces the h-pawn to recapture and clears the promotion race."],
+      ["h4", "g5", "coach", "hxg5", "White must recapture."],
+      ["h5", "h4", "student", "h4", "The h-pawn runs while White's king is distracted."],
+      ["f6", "g6", "coach", "Kxg6", "White removes the last kingside pawn."],
+      ["h4", "h3", "student", "h3", "The pawn continues toward promotion."],
+      ["g6", "f7", "coach", "Kf7", "White escorts the g-pawn."],
+      ["h3", "h2", "student", "h2", "Black is one step from queening."],
+      ["g5", "g6", "coach", "g6", "White creates a counter-passed pawn."],
+      ["h2", "h1", "student", "h1=Q", "Black promotes with enough time to stop the g-pawn."]
+    ],
+    "interactive": true,
+    "solution_start_move": 73,
+    "solution_lines": [
+      {"label": "Main line", "moves": [["g3","g5","Rxg5!"],["h4","g5","hxg5"],["h5","h4","h4"],["f6","g6","Kxg6"],["h4","h3","h3"],["g6","f7","Kf7"],["h3","h2","h2"],["g5","g6","g6"],["h2","h1","h1=Q"]]},
+      {"label": "King capture", "moves": [["g3","g5","Rxg5!"],["f6","g5","Kxg5"],["g2","g3","Kg3"],["g5","g6","Kxg6"],["h5","h4","h4"]]}
+    ]
+  },
+  {
+    "id": 1143,
+    "title": "Endgame 39 - Popov vs. Gareev",
+    "difficulty": "medium",
+    "source_page": 112,
+    "side": "white",
+    "fen": "8/8/8/4K3/8/4k3/5p1p/3Q4 w",
+    "category": "queen vs pawn",
+    "summary": "Keep the king inside the winning zone and remove the dangerous h-pawn.",
+    "steps": [
+      ["d1", "h1", "student", "Qh1!", "The queen takes aim at h2 while the king remains close enough to the mating zone."],
+      ["e3", "e2", "coach", "Ke2", "Black supports the pawns."],
+      ["h1", "h2", "student", "Qxh2", "White removes the dangerous rook pawn."],
+      ["e2", "f3", "coach", "Kf3", "The king tries to shelter the remaining pawn."],
+      ["h2", "h1", "student", "Qh1+", "The check begins the winning net."]
+    ],
+    "interactive": true,
+    "solution_start_move": 56,
+    "solution_lines": [
+      {"label": "Main line", "moves": [["d1","h1","Qh1!"],["e3","e2","Ke2"],["h1","h2","Qxh2"],["e2","f3","Kf3"],["h2","h1","Qh1+"]]},
+      {"label": "Game move", "moves": [["e5","d5","Kd5?"],["h2","h1","h1=Q+"],["d1","h1","Qxh1"],["e3","e2","Ke2"]]}
+    ]
+  },
+  {
+    "id": 1144,
+    "title": "Endgame 40 - Benyei vs. Dudas",
+    "difficulty": "hard",
+    "source_page": 112,
+    "side": "white",
+    "fen": "8/8/8/4K3/8/2p2Q2/1k6/8 w",
+    "category": "queen vs pawn",
+    "summary": "Choose the checking square that lets the king enter the winning zone.",
+    "steps": [
+      ["f3", "b7", "student", "Qb7+!", "The check keeps the pawn back and leaves the king a route into the winning zone."],
+      ["b2", "c1", "coach", "Kc1", "Black heads toward the corner."],
+      ["e5", "d4", "student", "Kd4!", "The king enters the winning zone instead of wasting another queen check."],
+      ["c3", "c2", "coach", "c2", "The pawn advances."],
+      ["d4", "d3", "student", "Kd3", "White's king arrives in time."],
+      ["c1", "d1", "coach", "Kd1", "Black tries to support promotion."],
+      ["b7", "h1", "student", "Qh1#", "The queen delivers the horizontal mate."]
+    ],
+    "interactive": true,
+    "solution_start_move": 59,
+    "solution_lines": [
+      {"label": "Main line", "moves": [["f3","b7","Qb7+!"],["b2","c1","Kc1"],["e5","d4","Kd4!"],["c3","c2","c2"],["d4","d3","Kd3"],["c1","d1","Kd1"],["b7","h1","Qh1#"]]},
+      {"label": "King to a1", "moves": [["f3","b7","Qb7+!"],["b2","a1","Ka1"],["b7","a6","Qa6+"],["a1","b2","Kb2"],["a6","b5","Qb5+"]]},
+      {"label": "Wrong check", "moves": [["f3","e2","Qe2+?"],["c3","c2","c2"],["e5","d4","Kd4"],["b2","b1","Kb1?"] ]}
+    ]
+  },
+  {
+    "id": 1145,
+    "title": "Endgame 41 - Thonnessen vs. Boos",
+    "difficulty": "medium",
+    "source_page": 113,
+    "side": "black",
+    "fen": "5K2/5P2/8/8/3kq3/8/8/8 b",
+    "category": "queen vs pawn",
+    "summary": "Keep the white king on the wrong side of its pawn before bringing the king closer.",
+    "steps": [
+      ["e4", "h7", "student", "Qh7!", "The queen blocks the white king from escaping around the right side of the pawn."],
+      ["f8", "e8", "coach", "Ke8", "White steps toward promotion."],
+      ["d4", "e5", "student", "Ke5", "Black's king approaches while the queen keeps the king boxed in."],
+      ["f7", "f8", "coach", "f8=Q", "White promotes."],
+      ["e5", "e6", "student", "Ke6", "The king arrives and the mating net is unavoidable."]
+    ],
+    "interactive": true,
+    "solution_start_move": 69,
+    "solution_lines": [
+      {"label": "Main line", "moves": [["e4","h7","Qh7!"],["f8","e8","Ke8"],["d4","e5","Ke5"],["f7","f8","f8=Q"],["e5","e6","Ke6"]]},
+      {"label": "Premature king move", "moves": [["d4","e5","Ke5?"],["f8","g7","Kg7!"]]},
+      {"label": "Game continuation", "moves": [["d4","e5","Ke5?"],["f8","e7","Ke7?"],["e4","b7","Qb7+"],["e7","e8","Ke8"],["e5","e6","Ke6"]]}
+    ]
+  },
+  {
+    "id": 1146,
+    "title": "Endgame 42 - Schussler vs. Kinnmark",
+    "difficulty": "hard",
+    "source_page": 113,
+    "side": "black",
+    "fen": "8/8/5p2/pp3K2/2Rk4/P7/1P4P1/8 b",
+    "category": "queen vs pawn",
+    "summary": "Capture with the king, then calculate the queen-versus-two-pawns race accurately.",
+    "steps": [
+      ["d4", "c4", "student", "Kxc4!", "The king capture is essential; the b-pawn capture allows White's king to return in time."],
+      ["f5", "f6", "coach", "Kxf6", "White removes the f-pawn."],
+      ["c4", "b3", "student", "Kb3", "The king attacks the queenside pawns."],
+      ["g2", "g4", "coach", "g4", "White starts the kingside race."],
+      ["b3", "b2", "student", "Kxb2", "Black clears the b-file for the passed pawn."],
+      ["g4", "g5", "coach", "g5", "White continues toward promotion."],
+      ["a5", "a4", "student", "a4", "The a-pawn creates the key shield against queen checks on b3."]
+    ],
+    "interactive": true,
+    "solution_start_move": 44,
+    "solution_lines": [
+      {"label": "Main line", "moves": [["d4","c4","Kxc4!"],["f5","f6","Kxf6"],["c4","b3","Kb3"],["g2","g4","g4"],["b3","b2","Kxb2"],["g4","g5","g5"],["a5","a4","a4"]]},
+      {"label": "Pawn capture", "moves": [["b5","c4","bxc4?"],["f5","f6","Kxf6"],["d4","d3","Kd3"],["f6","e5","Ke5"]]}
+    ]
+  },
+  {
+    "id": 1147,
+    "title": "Endgame 43 - Kanarek vs. Popilski",
+    "difficulty": "medium",
+    "source_page": 114,
+    "side": "black",
+    "fen": "8/8/8/2K5/8/8/4kp1Q/8 b",
+    "category": "queen vs pawn",
+    "summary": "Place the king on f3 to preserve the drawing fortress.",
+    "steps": [
+      ["e2", "f3", "student", "Kf3!", "The king reaches the correct square and the queen cannot force a winning net."]
+    ],
+    "interactive": true,
+    "solution_start_move": 82,
+    "solution_lines": [
+      {"label": "Main line", "moves": [["e2","f3","Kf3!"]]},
+      {"label": "Game move", "moves": [["e2","e1","Ke1?"],["h2","h4","Qh4?"],["e1","e2","Ke2"]]},
+      {"label": "White's winning chance", "moves": [["e2","e1","Ke1?"],["c5","d4","Kd4!"],["f2","f1","f1=Q"],["d4","e3","Ke3"]]}
+    ]
+  },
+  {
+    "id": 1148,
+    "title": "Endgame 44 - Pita Romero Rodriguez vs. Castro Acosta",
+    "difficulty": "easy",
+    "source_page": 115,
+    "side": "white",
+    "fen": "6K1/7P/8/8/8/8/5kq1/8 w",
+    "category": "queen vs pawn",
+    "summary": "Choose the safe corner route; the other king move loses two vital tempi.",
+    "steps": [
+      ["g8", "f8", "student", "Kf8!", "The king chooses the correct side of the pawn and holds the draw."]
+    ],
+    "interactive": true,
+    "solution_start_move": 51,
+    "solution_lines": [
+      {"label": "Main line", "moves": [["g8","f8","Kf8!"]]},
+      {"label": "Losing corner", "moves": [["g8","h8","Kh8?"],["f2","g3","Kg3!!"],["h8","g7","Kg7"],["g3","f4","Kf4+"] ]}
+    ]
+  },
+  {
+    "id": 1149,
+    "title": "Endgame 45 - Djuraev vs. Solomon",
+    "difficulty": "hard",
+    "source_page": 115,
+    "side": "white",
+    "fen": "3R4/4P3/2b1K3/8/2p5/2k5/8/8 w",
+    "category": "queen vs pawn",
+    "summary": "Use the rook to win the c-pawn instead of rushing promotion.",
+    "steps": [
+      ["d8", "c8", "student", "Rc8!", "The rook attacks the c-pawn and avoids the deceptive queen-versus-pawn draw."],
+      ["c6", "a4", "coach", "Ba4", "The bishop tries to distract the rook."],
+      ["e6", "d5", "student", "Kd5", "The king approaches the c-pawn."],
+      ["a4", "b5", "coach", "Bb5", "Black keeps the bishop active."],
+      ["c8", "c5", "student", "Rc5", "The rook blockades and wins the last pawn."]
+    ],
+    "interactive": true,
+    "solution_start_move": 58,
+    "solution_lines": [
+      {"label": "Main line", "moves": [["d8","c8","Rc8!"],["c6","a4","Ba4"],["e6","d5","Kd5"],["a4","b5","Bb5"],["c8","c5","Rc5"]]},
+      {"label": "Rushed promotion", "moves": [["e7","e8","e8=Q?"],["c6","e8","Bxe8"],["d8","e8","Rxe8"],["c3","d4","Kd4"]]},
+      {"label": "Game move", "moves": [["d8","d7","Rd7?"],["c6","d7","Bxd7+"],["e6","d7","Kxd7"],["c3","d2","Kd2"]]}
+    ]
+  },
+  {
+    "id": 1150,
+    "title": "Endgame 46 - Husari vs. Voloshin",
+    "difficulty": "hard",
+    "source_page": 116,
+    "side": "black",
+    "fen": "8/1K6/2P5/8/8/8/q5k1/8 b",
+    "category": "queen vs pawn",
+    "summary": "Pin the c-pawn or force the king away before it reaches the seventh rank.",
+    "steps": [
+      ["a2", "d5", "student", "Qd5!", "The queen pins the c-pawn and wins without allowing the king to build a fortress."],
+      ["b7", "b6", "coach", "Kb6", "White stays close to the pawn."],
+      ["g2", "f3", "student", "Kf3", "The king approaches while the queen maintains the pin."],
+      ["c6", "c7", "coach", "c7", "White pushes once the pin is released."],
+      ["d5", "a8", "student", "Qa8", "The queen stops promotion and completes the win."]
+    ],
+    "interactive": true,
+    "solution_start_move": 50,
+    "solution_lines": [
+      {"label": "Main line", "moves": [["a2","d5","Qd5!"],["b7","b6","Kb6"],["g2","f3","Kf3"],["c6","c7","c7"],["d5","a8","Qa8"]]},
+      {"label": "Checking route", "moves": [["a2","b3","Qb3+"],["b7","c8","Kc8"],["g2","f3","Kf3"],["c6","c7","c7"],["f3","e4","Ke4"],["c8","d7","Kd7"],["b3","d5","Qd5+"],["d7","e7","Ke7"],["d5","c6","Qc6"]]},
+      {"label": "Materialistic blunder", "moves": [["a2","b2","Qxb2+??"],["b7","c8","Kc8!"] ]}
+    ]
+  }
+]

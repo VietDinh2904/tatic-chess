@@ -4,8 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#171713" />
-  <title>Tactic Atelier - 1,150 Interactive Chess Puzzles</title>
-  <meta name="description" content="A 1,150-puzzle interactive chess library combining Woodpecker tactics with 22 digitized endgame exercises and nine original 2D chess sets." />
+  <title>Tactic Atelier - Chess Training Library</title>
+  <meta name="description" content="Two separate interactive chess books: 1,128 Woodpecker tactics and 22 digitized Chess Endgame exercises." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
@@ -19,11 +19,18 @@
         <span><strong>TACTIC</strong><small>ATELIER</small></span>
       </a>
 
-      <div class="course-label">TRAINING COURSE</div>
-      <div class="course-card">
-        <span class="course-icon">W</span>
-        <div><b>Woodpecker + Endgames</b><small>Complete tactics and endgame library</small></div>
-        <span class="course-progress">1,150</span>
+      <div class="course-label">CHESS BOOKS</div>
+      <div class="course-library" id="courseLibrary" aria-label="Choose a chess book">
+        <button class="course-card active" data-book="woodpecker">
+          <span class="course-icon">W</span>
+          <span class="course-copy"><b>Woodpecker</b><small>Tactical combinations</small></span>
+          <span class="course-progress" id="woodpeckerCount">1,128</span>
+        </button>
+        <button class="course-card" data-book="endgame">
+          <span class="course-icon">E</span>
+          <span class="course-copy"><b>Chess Endgame</b><small>Endgame studies · Book 2</small></span>
+          <span class="course-progress" id="endgameCount">22</span>
+        </button>
       </div>
 
       <div class="puzzle-filters" aria-label="Puzzle filters">
@@ -61,7 +68,7 @@
         <div class="board-column">
           <div class="lesson-meta">
             <div>
-              <span class="lesson-number" id="lessonNumber">PUZZLE 0001 / 1,150</span>
+              <span class="lesson-number" id="lessonNumber">WOODPECKER 0001 / 1,128</span>
               <h2 id="lessonTitle">Hamppe – Steinitz</h2>
               <p id="lessonPlace">Vienna, 1860</p>
             </div>
@@ -99,7 +106,7 @@
           </div>
 
           <div class="move-history">
-            <div class="section-title"><span>MOVE HISTORY</span><span id="mistakeCount">0 mistakes</span></div>
+            <div class="section-title"><span>MOVE HISTORY</span><span id="mistakeCount">FREE PLAY</span></div>
             <ol id="moveList"><li class="empty-move">No moves yet</li></ol>
           </div>
 
@@ -115,12 +122,6 @@
               <button class="review-play" id="reviewPlay">▶ Play line</button>
               <button id="reviewNext" aria-label="Next move">→</button>
             </div>
-          </div>
-
-          <div class="hint-meter">
-            <div class="section-title"><span>HINT LEVEL</span><span id="hintLabel">Independent</span></div>
-            <div class="meter"><i></i><i></i><i></i><i></i><i></i></div>
-            <small>3 misses: highlight piece · 5 misses: highlight square</small>
           </div>
 
           <button class="next-btn" id="nextBtn" disabled>Next puzzle <span>→</span></button>

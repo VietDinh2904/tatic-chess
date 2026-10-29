@@ -52,7 +52,7 @@ const modal = document.querySelector("#modal");
 const moveFeedback = document.querySelector("#moveFeedback");
 let current = 0, step = 0, mistakes = 0, attempts = 0, correctAttempts = 0, selected = null;
 let position = {}, lastMove = [], solved = new Set(), style = "twisted", sound = true;
-let activeDifficulty = "all", activeCategory = "all";
+let activeBook = "woodpecker", activeDifficulty = "all", activeCategory = "all";
 let reviewLineIndex = 0, reviewPly = -1, reviewTimer = null;
 let historyMoves = [];
 let trainingLines = [], candidateLineIndexes = [];
@@ -66,11 +66,17 @@ function parseFen(fen) {
   return out;
 }
 
+function bookExerciseNumber(puzzle) {
+  if (puzzle.book !== "endgame") return puzzle.id;
+  return Number(puzzle.title.match(/^Endgame\s+(\d+)/i)?.[1] || puzzle.id);
+}
+
 function renderList() {
   const visible = puzzles.map((p,index) => ({p,index})).filter(({p}) =>
+    p.book === activeBook &&
     (activeDifficulty === "all" || p.difficulty === activeDifficulty) &&
     (activeCategory === "all" || p.category === activeCategory));
-  listEl.innerHTML = visible.map(({p,index}) => `<button class="puzzle-item ${index===current?"active":""} ${solved.has(index)?"solved":""}" data-index="${index}"><span class="num">${String(p.id).padStart(4,"0")}</span><b>${p.title}</b><i></i></button>`).join("") || `<p class="empty-filter">No puzzles match these filters.</p>`;
+  listEl.innerHTML = visible.map(({p,index}) => `<button class="puzzle-item ${index===current?"active":""} ${solved.has(index)?"solved":""}" data-index="${index}"><span class="num">${String(bookExerciseNumber(p)).padStart(4,"0")}</span><b>${p.title}</b><i></i></button>`).join("") || `<p class="empty-filter">No puzzles match these filters.</p>`;
   listEl.querySelectorAll("button").forEach(b => b.onclick = () => loadPuzzle(+b.dataset.index));
   document.querySelector("#visibleCount").textContent = visible.length.toLocaleString("en-US");
 }
@@ -259,9 +265,8 @@ function attemptMove(from,to) {
   const options = currentMoveOptions();
   const option = options[0], expected = expectedFromOption(option);
   if (!expected || expected[2] !== "student" || !from) return;
-  attempts++;
   if (from === expected[0] && to === expected[1]) {
-    correctAttempts++; movePiece(from,to,expected[3]); addMove(expected); step++;
+    attempts++; correctAttempts++; movePiece(from,to,expected[3]); addMove(expected); step++;
     mistakes = 0;
     coach.className = "coach-message success";
     coach.innerHTML = `<span class="message-label">STRONG MOVE</span><p>${expected[4]}${currentMoveOptions().length ? " The line is not finished yet." : ""}</p>`;
@@ -275,11 +280,9 @@ function attemptMove(from,to) {
     };
     showCorrectMoveFeedback(expected);
   } else {
-    mistakes++; selected = null; coach.className = "coach-message error";
-    coach.innerHTML = `<span class="message-label">TRY AGAIN</span><p>${mistakes < 3 ? "That is not the strongest idea. Try another piece and look for forcing moves." : "Look at the highlighted piece — it is the key to this position."}</p>`;
-    if (mistakes === 3) showToast("Hint level 1: the correct piece is highlighted");
-    if (mistakes === 5) showToast("Hint level 2: the destination square is highlighted");
-    tone(false); updateStats(); renderBoard();
+    // Wrong attempts are deliberately silent: keep the position unchanged and
+    // let the learner freely try another piece or square.
+    selected = null; renderBoard();
   }
 }
 
@@ -409,7 +412,9 @@ function loadPuzzle(index) {
   const p = puzzles[current];
   trainingLines = buildTrainingLines(p);
   candidateLineIndexes = trainingLines.map((line, lineIndex) => lineIndex);
-  document.querySelector("#lessonNumber").textContent = `PUZZLE ${String(p.id).padStart(4,"0")} / ${puzzles.length.toLocaleString("en-US")}`;
+  const bookTotal = puzzles.filter(item => item.book === p.book).length;
+  const bookLabel = p.book === "endgame" ? "CHESS ENDGAME" : "WOODPECKER";
+  document.querySelector("#lessonNumber").textContent = `${bookLabel} ${String(bookExerciseNumber(p)).padStart(4,"0")} / ${bookTotal.toLocaleString("en-US")}`;
   document.querySelector("#lessonTitle").textContent = p.title;
   document.querySelector("#lessonPlace").textContent = `${p.difficulty.toUpperCase()} · ${p.category.toUpperCase()} · BOOK PAGE ${p.source_page}`;
   const badge = document.querySelector("#turnBadge");
@@ -428,15 +433,26 @@ function loadPuzzle(index) {
 }
 
 function updateStats() {
-  document.querySelector("#mistakeCount").textContent = `${mistakes} ${mistakes === 1 ? "mistake" : "mistakes"}`;
+  document.querySelector("#mistakeCount").textContent = "FREE PLAY";
   document.querySelector("#solvedCount").textContent = solved.size;
   document.querySelector("#streakCount").textContent = solved.size;
   document.querySelector("#accuracy").textContent = attempts ? `${Math.round(correctAttempts/attempts*100)}%` : "100%";
-  document.querySelectorAll(".meter i").forEach((el,i) => el.classList.toggle("on", i < Math.min(mistakes,5)));
-  document.querySelector("#hintLabel").textContent = mistakes >= 5 ? "Target square" : mistakes >= 3 ? "Correct piece" : "Independent";
 }
 
-function nextPuzzle() { loadPuzzle((current + 1) % puzzles.length); }
+function filteredPuzzleIndexes() {
+  return puzzles.map((p, index) => ({ p, index })).filter(({ p }) =>
+    p.book === activeBook &&
+    (activeDifficulty === "all" || p.difficulty === activeDifficulty) &&
+    (activeCategory === "all" || p.category === activeCategory)
+  ).map(({ index }) => index);
+}
+
+function nextPuzzle() {
+  const indexes = filteredPuzzleIndexes();
+  if (!indexes.length) return;
+  const positionInBook = indexes.indexOf(current);
+  loadPuzzle(indexes[(positionInBook + 1 + indexes.length) % indexes.length]);
+}
 function showToast(text) { const t=document.querySelector("#toast"); t.textContent=text; t.classList.add("show"); setTimeout(()=>t.classList.remove("show"),2400); }
 function tone(ok) {
   if (!sound || !window.AudioContext) return;
@@ -465,14 +481,36 @@ document.querySelectorAll("[data-difficulty]").forEach(button => button.onclick 
 });
 document.querySelector("#categoryFilter").onchange = event => { activeCategory = event.target.value; renderList(); };
 
+function updateCategoryOptions() {
+  const categories = [...new Set(puzzles.filter(p => p.book === activeBook).map(p => p.category))].sort();
+  const select = document.querySelector("#categoryFilter");
+  select.innerHTML = `<option value="all">All objectives</option>${categories.map(category => `<option value="${category}">${category.replace(/\b\w/g, letter => letter.toUpperCase())}</option>`).join("")}`;
+  select.value = activeCategory;
+}
+
+function selectBook(book) {
+  if (!puzzles.some(p => p.book === book)) return;
+  activeBook = book; activeDifficulty = "all"; activeCategory = "all";
+  document.querySelectorAll("[data-book]").forEach(button => button.classList.toggle("active", button.dataset.book === book));
+  document.querySelectorAll("[data-difficulty]").forEach(button => button.classList.toggle("active", button.dataset.difficulty === "all"));
+  updateCategoryOptions();
+  const firstIndex = puzzles.findIndex(p => p.book === book);
+  loadPuzzle(firstIndex);
+}
+
+document.querySelectorAll("[data-book]").forEach(button => button.onclick = () => selectBook(button.dataset.book));
+
 async function init() {
   try {
     const [response, endgameResponse] = await Promise.all([fetch("puzzles.json"), fetch("endgames.json")]);
     if (!response.ok) throw new Error(`Puzzle library failed to load (${response.status})`);
     if (!endgameResponse.ok) throw new Error(`Endgame library failed to load (${endgameResponse.status})`);
-    puzzles = [...await response.json(), ...await endgameResponse.json()];
-    const categories = [...new Set(puzzles.map(p => p.category))].sort();
-    document.querySelector("#categoryFilter").innerHTML = `<option value="all">All objectives</option>${categories.map(category => `<option value="${category}">${category.replace(/\b\w/g, letter => letter.toUpperCase())}</option>`).join("")}`;
+    const woodpecker = (await response.json()).map(puzzle => ({ ...puzzle, book: "woodpecker" }));
+    const endgames = (await endgameResponse.json()).map(puzzle => ({ ...puzzle, book: "endgame" }));
+    puzzles = [...woodpecker, ...endgames];
+    document.querySelector("#woodpeckerCount").textContent = woodpecker.length.toLocaleString("en-US");
+    document.querySelector("#endgameCount").textContent = endgames.length.toLocaleString("en-US");
+    updateCategoryOptions();
     loadPuzzle(0);
   } catch (error) {
     coach.className = "coach-message error";

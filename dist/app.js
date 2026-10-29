@@ -51,7 +51,7 @@ const moveList = document.querySelector("#moveList");
 const modal = document.querySelector("#modal");
 const moveFeedback = document.querySelector("#moveFeedback");
 let current = 0, step = 0, mistakes = 0, attempts = 0, correctAttempts = 0, selected = null;
-let position = {}, lastMove = [], solved = new Set(), style = "twisted", sound = true;
+let position = {}, officialPosition = {}, lastMove = [], solved = new Set(), style = "twisted", sound = true;
 let activeBook = "woodpecker", activeDifficulty = "all", activeCategory = "all";
 let reviewLineIndex = 0, reviewPly = -1, reviewTimer = null;
 let historyMoves = [];
@@ -264,9 +264,12 @@ function attemptMove(from,to) {
   if (moveFeedback.classList.contains("open")) return;
   const options = currentMoveOptions();
   const option = options[0], expected = expectedFromOption(option);
-  if (!expected || expected[2] !== "student" || !from) return;
-  if (from === expected[0] && to === expected[1]) {
-    attempts++; correctAttempts++; movePiece(from,to,expected[3]); addMove(expected); step++;
+  if (!expected || expected[2] !== "student" || !from || !position[from]) return;
+  const isCorrectMove = from === expected[0] && to === expected[1] && position[from] === officialPosition[from];
+  if (isCorrectMove) {
+    // Discard any exploratory moves before advancing the official solution.
+    position = { ...officialPosition };
+    attempts++; correctAttempts++; movePiece(from,to,expected[3]); officialPosition = { ...position }; addMove(expected); step++;
     mistakes = 0;
     coach.className = "coach-message success";
     coach.innerHTML = `<span class="message-label">STRONG MOVE</span><p>${expected[4]}${currentMoveOptions().length ? " The line is not finished yet." : ""}</p>`;
@@ -280,9 +283,11 @@ function attemptMove(from,to) {
     };
     showCorrectMoveFeedback(expected);
   } else {
-    // Wrong attempts are deliberately silent: keep the position unchanged and
-    // let the learner freely try another piece or square.
-    selected = null; renderBoard();
+    // Exploratory moves are deliberately silent. Let learners rearrange pieces
+    // freely; the canonical position is restored only when they find the move.
+    if (!sameColor(position[from], position[to])) movePiece(from,to);
+    else selected = null;
+    renderBoard();
   }
 }
 
@@ -292,6 +297,7 @@ function playCoachMoves() {
   if (!expected || expected[2] !== "coach") { renderBoard(); return; }
   candidateLineIndexes = option.lineIndexes;
   movePiece(expected[0], expected[1],expected[3]); addMove(expected); step++;
+  officialPosition = { ...position };
   coach.className = "coach-message";
   const remaining = studentMovesRemaining();
   coach.innerHTML = `<span class="message-label">OPPONENT REPLIES</span><p>${expected[4]}${remaining ? ` Now find your next move — ${remaining} move${remaining === 1 ? "" : "s"} left in the line.` : ""}</p>`;
@@ -409,6 +415,7 @@ function loadPuzzle(index) {
   stopReviewPlayback();
   current = index; step = 0; mistakes = 0; selected = null; lastMove = []; historyMoves = [];
   position = parseFen(puzzles[current].fen);
+  officialPosition = { ...position };
   const p = puzzles[current];
   trainingLines = buildTrainingLines(p);
   candidateLineIndexes = trainingLines.map((line, lineIndex) => lineIndex);
